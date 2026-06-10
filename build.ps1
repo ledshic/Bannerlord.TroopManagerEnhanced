@@ -80,13 +80,39 @@ if ($LASTEXITCODE -eq 0) {
 }
 
 # Copy DLL and PDB to output directory with Module ID name
-Write-Message "Copying build artifacts to output directory..." "Info"
+Write-Message "Copying build artifacts to module bin directory..." "Info"
 
 $dllFile = Join-Path $binOutputDir "TroopManagerEnhanced.dll"
 $pdbFile = Join-Path $binOutputDir "TroopManagerEnhanced.pdb"
 
-$outputDllFile = Join-Path $outputDir $dllFileName
-$outputPdbFile = Join-Path $outputDir $pdbFileName
+# First copy entire _Module structure
+Write-Message "Copying _Module directory structure..." "Info"
+$sourceModuleDir = Join-Path $projectRoot "_Module"
+$outputModuleDir = Join-Path $outputDir "_Module"
+
+if (Test-Path $sourceModuleDir) {
+    if (Test-Path $outputModuleDir) {
+        Remove-Item -Path $outputModuleDir -Recurse -Force
+    }
+    Copy-Item -Path $sourceModuleDir -Destination $outputModuleDir -Recurse -Force
+    Write-Message "Copied _Module directory structure" "Success"
+} else {
+    Write-Message "Warning: _Module directory not found" "Warning"
+}
+
+# Now copy DLL and PDB to the module bin directory (with Module ID name)
+$moduleBinDir = Join-Path (Join-Path $outputModuleDir "bin") "Win64_Shipping_Client"
+$outputDllFile = Join-Path $moduleBinDir $dllFileName
+$outputPdbFile = Join-Path $moduleBinDir $pdbFileName
+
+# Create bin directory if it doesn't exist
+if (-not (Test-Path $moduleBinDir)) {
+    New-Item -ItemType Directory -Path $moduleBinDir -Force | Out-Null
+} else {
+    # Clean old DLL files from bin directory
+    Get-ChildItem -Path $moduleBinDir -Filter "*.dll" -Force | Remove-Item -Force -ErrorAction SilentlyContinue
+    Get-ChildItem -Path $moduleBinDir -Filter "*.pdb" -Force | Remove-Item -Force -ErrorAction SilentlyContinue
+}
 
 if (Test-Path $dllFile) {
     Copy-Item -Path $dllFile -Destination $outputDllFile -Force
@@ -103,19 +129,34 @@ if (Test-Path $pdbFile) {
     Write-Message "Warning: PDB not found" "Warning"
 }
 
-# Copy entire _Module structure
-Write-Message "Copying _Module directory structure..." "Info"
-$sourceModuleDir = Join-Path $projectRoot "_Module"
-$outputModuleDir = Join-Path $outputDir "_Module"
 
-if (Test-Path $sourceModuleDir) {
-    if (Test-Path $outputModuleDir) {
-        Remove-Item -Path $outputModuleDir -Recurse -Force
+# Copy ModuleData XML files
+Write-Message "Copying ModuleData files..." "Info"
+$sourceModuleDataDir = Join-Path $projectRoot "ModuleData"
+$outputModuleDataDir = Join-Path $outputModuleDir "ModuleData"
+
+if (Test-Path $sourceModuleDataDir) {
+    if (Test-Path $outputModuleDataDir) {
+        Remove-Item -Path $outputModuleDataDir -Recurse -Force
     }
-    Copy-Item -Path $sourceModuleDir -Destination $outputModuleDir -Recurse -Force
-    Write-Message "Copied _Module directory structure" "Success"
+    Copy-Item -Path $sourceModuleDataDir -Destination $outputModuleDataDir -Recurse -Force
+    Write-Message "Copied ModuleData directory" "Success"
 } else {
-    Write-Message "Warning: _Module directory not found" "Warning"
+    Write-Message "Warning: ModuleData directory not found" "Warning"
+}
+
+# Rename _Module to TroopsManagerEnhanced
+Write-Message "Renaming module folder to $ModuleId..." "Info"
+$finalModuleDir = Join-Path $outputDir $ModuleId
+
+if (Test-Path $outputModuleDir) {
+    if (Test-Path $finalModuleDir) {
+        Remove-Item -Path $finalModuleDir -Recurse -Force
+    }
+    Rename-Item -Path $outputModuleDir -NewName $ModuleId
+    Write-Message "Renamed module folder to $ModuleId" "Success"
+} else {
+    Write-Message "Warning: _Module directory not found for renaming" "Warning"
 }
 
 # Summary
