@@ -1,0 +1,50 @@
+# Build outputs
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio
+.vs/
+*.vspscc
+*.vssscc
+*_i.c
+*_p.c
+*_i.h
+*.ilk
+*.meta
+*.obj
+*.pch
+*.pdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*.log
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
+
+# Rider / JetBrains
+.idea/
+*.sln.iml
+
+# Mac
+.DS_Store
+
+# Common mod dev artifacts
+_Module/bin/
+_Module/Win64_Shipping_Client/
+
+# Don't commit local game paths if someone puts absolute paths in csproj.user
+*.csproj.user
