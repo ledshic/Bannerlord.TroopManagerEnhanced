@@ -42,10 +42,6 @@ obj/
 # Mac
 .DS_Store
 
-# Common mod dev artifacts
-_Module/bin/
-_Module/Win64_Shipping_Client/
-
 # Build output directory
 output/
 
