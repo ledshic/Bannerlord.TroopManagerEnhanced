@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Module>
   <Name value="TroopManagerEnhanced"/>
-  <Id value="TroopManagerEnhanced"/>
+  <Id value="bannerlord.troopsmanagerenhanced"/>
   <Version value="v1.0.0"/>
   <DefaultModule value="true"/>
   <SingleplayerModule value="true"/>

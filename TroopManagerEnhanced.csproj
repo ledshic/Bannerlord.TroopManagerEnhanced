@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <!-- Update this to your Bannerlord 1.4.5 + War Sails install for easy references -->
-    <GameFolder Condition="'$(GameFolder)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord</GameFolder>
+    <GameFolder Condition="'$(GameFolder)' == ''">D:\Steam\steamapps\common\Mount &amp; Blade II Bannerlord</GameFolder>
     <GameBinWin64>$(GameFolder)\bin\Win64_Shipping_Client</GameBinWin64>
 
     <!-- Recommended: Set this when building for a specific game version -->

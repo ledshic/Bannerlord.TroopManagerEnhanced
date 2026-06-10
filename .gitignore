@@ -46,5 +46,8 @@ obj/
 _Module/bin/
 _Module/Win64_Shipping_Client/
 
+# Build output directory
+output/
+
 # Don't commit local game paths if someone puts absolute paths in csproj.user
 *.csproj.user
