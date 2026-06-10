@@ -13,7 +13,7 @@ param(
 )
 
 # Module Identity
-$ModuleId = "TroopsManagerEnhanced"
+$ModuleId = "TroopManagerEnhanced"
 
 # Colors for output
 $colors = @{
