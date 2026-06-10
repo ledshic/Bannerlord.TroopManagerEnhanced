@@ -39,6 +39,9 @@ namespace TroopManagerEnhanced
             if (party == null || !party.IsActive || party != MobileParty.MainParty)
                 return;
 
+            // War Sails / 1.4.5+ safety: only the player's main land party
+            if (party != MobileParty.MainParty) return;
+
             if (settings == null || !settings.ModEnabled)
                 return;
 
@@ -76,6 +79,9 @@ namespace TroopManagerEnhanced
         {
             if (party == null || !party.IsActive || party != MobileParty.MainParty) return;
             if (settings == null || !settings.ModEnabled) return;
+
+            // War Sails / 1.4.5+ safety
+            if (party != MobileParty.MainParty) return;
 
             bool promotionEnabled = settings.AutoPromotionEnabled || settings.AutoUpgradeEnabled;
             if (!promotionEnabled) return;

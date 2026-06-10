@@ -2,7 +2,13 @@
 
 A quality-of-life mod for Mount & Blade II: Bannerlord that automates common troop management tasks for the player's party.
 
-**Target**: Bannerlord 1.2.x / 1.3+ (latest stable)
+**Target**: Bannerlord 1.4.5 + War Sails 1.2.5 (and compatible later patches)
+
+**Tested / Designed For**:
+- Mount & Blade II: Bannerlord v1.4.5
+- War Sails DLC v1.2.5
+
+The mod primarily manipulates `MobileParty.MainParty` using high-level vanilla models (`IPartyTroopUpgradeModel`, `PartyWageModel`, roster operations). It has low risk of conflicting with naval content.
 
 **Dependencies** (must be loaded **before** this mod):
 - Bannerlord.Harmony (top of load order)

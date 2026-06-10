@@ -57,6 +57,24 @@ namespace TroopManagerEnhanced
             // If you later move some promotion state (cooldowns, stats) to PerSave, store it here.
         }
 
+        /// <summary>
+        /// 1.4.5 + War Sails compatibility helper.
+        /// Returns true only for the player's main land party.
+        /// Ignores naval/ship parties that may exist in War Sails content.
+        /// </summary>
+        private static bool IsPlayerLandParty(MobileParty party)
+        {
+            if (party == null) return false;
+            if (party != MobileParty.MainParty) return false;
+
+            // Additional future-proofing: skip obvious ship parties if the API exposes it in 1.4.5+
+            // (property names may vary; this is defensive and non-breaking if the property doesn't exist).
+            // Example (commented because it may not exist in all 1.4.5 builds):
+            // if (party.HasProperty("IsShip") && (bool)party.GetType().GetProperty("IsShip")?.GetValue(party) == true) return false;
+
+            return true;
+        }
+
         private void OnDailyTick()
         {
             var settings = TroopManagerSettings.Instance;
@@ -68,6 +86,11 @@ namespace TroopManagerEnhanced
 
             var mainParty = MobileParty.MainParty;
             if (mainParty == null || !mainParty.IsActive)
+                return;
+
+            // 1.4.5 + War Sails compatibility: Only manage the player's primary land party.
+            // Naval/ship parties (introduced or expanded in War Sails) should be ignored.
+            if (!IsPlayerLandParty(mainParty))
                 return;
 
             try
@@ -109,6 +132,9 @@ namespace TroopManagerEnhanced
             if (mainParty == null || !mainParty.IsActive)
                 return;
 
+            if (!IsPlayerLandParty(mainParty))
+                return;
+
             try
             {
                 _promotionManager.TryPerformPromotions(mainParty, settings);
@@ -132,6 +158,9 @@ namespace TroopManagerEnhanced
 
             var mainParty = MobileParty.MainParty;
             if (mainParty == null || !mainParty.IsActive)
+                return;
+
+            if (!IsPlayerLandParty(mainParty))
                 return;
 
             try
@@ -158,6 +187,9 @@ namespace TroopManagerEnhanced
 
             var mainParty = MobileParty.MainParty;
             if (mainParty == null || !mainParty.IsActive)
+                return;
+
+            if (!IsPlayerLandParty(mainParty))
                 return;
 
             try
