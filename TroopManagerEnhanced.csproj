@@ -57,6 +57,10 @@
       <HintPath>$(GameBinWin64)\TaleWorlds.Localization.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="TaleWorlds.InputSystem">
+      <HintPath>$(GameBinWin64)\TaleWorlds.InputSystem.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="TaleWorlds.MountAndBlade">
       <HintPath>$(GameBinWin64)\TaleWorlds.MountAndBlade.dll</HintPath>
       <Private>false</Private>

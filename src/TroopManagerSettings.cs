@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.ComponentModel;
+using MCM.Abstractions;
 using MCM.Abstractions.Attributes;
 using MCM.Abstractions.Attributes.v2;
 using MCM.Abstractions.Base.Global;
 using MCM.Abstractions.Base.PerSave;
+using TaleWorlds.CampaignSystem.Party;
 
 namespace TroopManagerEnhanced
 {
@@ -47,25 +49,25 @@ namespace TroopManagerEnhanced
     /// <summary>
     /// MCMv5 Global settings for TroopManagerEnhanced.
     /// All options appear in Mod Options under "Troop Manager Enhanced".
-    /// 
+    ///
     /// FormatType = "json" ensures settings are persisted to disk.
-    /// 
+    ///
     /// Localization: All user-facing strings use {=TME_xxx} keys.
     /// Add translations to ModuleData/Languages/EN/sta_strings.xml (and other languages):
     ///   &lt;string id="TME_EnableMod" text="Enable Mod" /&gt;
     ///   &lt;string id="TME_EnableModHint" text="Master toggle..." /&gt;
     /// etc.
     /// </summary>
-    internal sealed class TroopManagerSettings : AttributeGlobalSettings<TroopManagerSettings>
+    public sealed class TroopManagerSettings : AttributeGlobalSettings<TroopManagerSettings>
     {
         public override string Id => "TroopManagerEnhanced_v1";
-        public override string DisplayName 
-        { 
-            get 
-            { 
+        public override string DisplayName
+        {
+            get
+            {
                 var ver = typeof(TroopManagerSettings).Assembly.GetName().Version?.ToString(3) ?? "1.0.0";
-                return $"{{=TME_MainDisplay}}Troop Manager Enhanced {ver}"; 
-            } 
+                return $"{{=TME_MainDisplay}}Troop Manager Enhanced {ver}";
+            }
         }
         public override string FolderName => "TroopManagerEnhanced";
         public override string FormatType => "json";
@@ -515,7 +517,6 @@ namespace TroopManagerEnhanced
         public override string Id => "TroopManagerEnhanced_PerSave_v1";
         public override string DisplayName => "{=TME_PerSaveDisplay}Troop Manager Enhanced (Per-Save)";
         public override string FolderName => "TroopManagerEnhanced";
-        public override string FormatType => "json";
 
         [SettingPropertyBool(
             "{=TME_PerSavePromo}Enable Promotion in this Campaign/Save",
@@ -543,30 +544,6 @@ namespace TroopManagerEnhanced
             0, 100, "0",
             RequireRestart = false,
             HintText = "{=TME_PerSavePromoLimitHint}0 = use global Max Promotions Per Check. Non-zero overrides for this save only.")]
-        [SettingPropertyGroup("{=TME_PerSaveGroup}Per-Save Feature Toggles")]
-        public int PerSavePromotionLimitOverride { get; set; } = 0;
-    }
-}
-
-        [SettingPropertyBool(
-            "{=TME_PerSavePris}Enable Prisoner Recruitment in this Campaign/Save",
-            RequireRestart = false,
-            HintText = "{=TME_PerSavePrisHint}Per-save override for prisoner auto-recruit.")]
-        [SettingPropertyGroup("{=TME_PerSaveGroup}Per-Save Feature Toggles")]
-        public bool EnablePrisonerRecruitThisSave { get; set; } = true;
-
-        [SettingPropertyBool(
-            "{=TME_PerSaveAccel}Enable Accelerated Recruitment in this Campaign/Save",
-            RequireRestart = false,
-            HintText = "{=TME_PerSaveAccelHint}Per-save override for accelerated feature.")]
-        [SettingPropertyGroup("{=TME_PerSaveGroup}Per-Save Feature Toggles")]
-        public bool EnableAcceleratedThisSave { get; set; } = true;
-
-        [SettingPropertyInteger(
-            "{=TME_PerSavePromoLimit}Per-Save Promotion Limit Override",
-            0, 100, "0",
-            RequireRestart = false,
-            HintText = "{=TME_PerSavePromoLimitHint}0 = use global. Otherwise overrides Max Promotions Per Check for this save.")]
         [SettingPropertyGroup("{=TME_PerSaveGroup}Per-Save Feature Toggles")]
         public int PerSavePromotionLimitOverride { get; set; } = 0;
     }

@@ -320,8 +320,9 @@ namespace TroopManagerEnhanced
                 if (toRecruit <= 0) continue;
 
                 // Safe gold deduction
-                hero.ChangeHeroGold(-cost);
-                totalGoldSpent += cost;
+                int goldCost = (cost > int.MaxValue) ? int.MaxValue : (int)cost;
+                hero.ChangeHeroGold(-goldCost);
+                totalGoldSpent += goldCost;
 
                 // Perform the recruitment (vanilla roster move)
                 prisonRoster.AddToCounts(troop, -toRecruit);

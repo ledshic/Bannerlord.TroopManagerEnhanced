@@ -184,8 +184,6 @@ namespace TroopManagerEnhanced
                     party.Party,
                     costMultiplier);
 
-                bool promotedThisStack = false;
-
                 foreach (var target in orderedTargets)
                 {
                     if (totalPromoted >= maxThisPass)
@@ -193,7 +191,7 @@ namespace TroopManagerEnhanced
 
                     // Ask the VANILLA model for the true costs
                     int xpCost = upgradeModel.GetXpCostForUpgrade(party.Party, fromTroop, target);
-                    int baseGoldCost = upgradeModel.GetGoldCostForUpgrade(party.Party, fromTroop, target);
+                    int baseGoldCost = upgradeModel.GetGoldCostForUpgrade(party.Party, fromTroop, target).RoundedResultNumber;
                     int effectiveGoldCost = (int)(baseGoldCost * costMultiplier);
 
                     if (effectiveGoldCost < 0) effectiveGoldCost = 0;
@@ -236,7 +234,6 @@ namespace TroopManagerEnhanced
 
                     goldSpent += actualCostThisUpgrade;
                     totalPromoted += num;
-                    promotedThisStack = true;
 
                     // Optional: immediately try to promote the *newly created* upgraded troops further this pass.
                     // This only has effect if the newly promoted troops somehow already have XP (rare) or if xpCost was 0.
@@ -281,7 +278,7 @@ namespace TroopManagerEnhanced
         private int TryChainPromotionOnNewlyPromoted(
             TroopRoster roster,
             CharacterObject newlyPromotedTroop,
-            IPartyTroopUpgradeModel upgradeModel,
+            PartyTroopUpgradeModel upgradeModel,
             MobileParty party,
             int remainingGoldBudget,
             float costMultiplier,
@@ -326,7 +323,7 @@ namespace TroopManagerEnhanced
                 if (chained >= maxRemaining) break;
 
                 int xpCost = upgradeModel.GetXpCostForUpgrade(party.Party, newlyPromotedTroop, nextTarget);
-                int baseGold = upgradeModel.GetGoldCostForUpgrade(party.Party, newlyPromotedTroop, nextTarget);
+                int baseGold = upgradeModel.GetGoldCostForUpgrade(party.Party, newlyPromotedTroop, nextTarget).RoundedResultNumber;
                 int effGold = (int)(baseGold * costMultiplier);
 
                 int byXp = (xpCost <= 0) ? newElement.Number : (xp / xpCost);
@@ -376,7 +373,7 @@ namespace TroopManagerEnhanced
             CharacterObject fromTroop,
             PromotionSelectionMode mode,
             CultureObject? playerCulture,
-            IPartyTroopUpgradeModel upgradeModel,
+            PartyTroopUpgradeModel upgradeModel,
             PartyBase partyBaseForCosts,
             float costMultiplier)
         {
@@ -412,7 +409,7 @@ namespace TroopManagerEnhanced
                     return targets
                         .OrderBy(t =>
                         {
-                            int g = upgradeModel.GetGoldCostForUpgrade(partyBaseForCosts, fromTroop, t);
+                            int g = upgradeModel.GetGoldCostForUpgrade(partyBaseForCosts, fromTroop, t).RoundedResultNumber;
                             return (int)(g * costMultiplier);
                         })
                         .ToList();

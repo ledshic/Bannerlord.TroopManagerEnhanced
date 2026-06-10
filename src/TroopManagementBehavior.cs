@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
@@ -150,7 +151,7 @@ namespace TroopManagerEnhanced
         /// High frequency game tick (called very often).
         /// Only managers configured for "OnPartyTick" frequency will actually execute logic here.
         /// </summary>
-        private void OnGameTick()
+        private void OnGameTick(float dt)
         {
             var settings = TroopManagerSettings.Instance;
             if (settings == null || !settings.ModEnabled)
@@ -244,10 +245,11 @@ namespace TroopManagerEnhanced
 
             if (settings.ShowNotifications)
             {
+                var text = new TextObject("{=TME002}Recruited {COUNT} {TROOP}.");
+                text.SetTextVariable("COUNT", toRecruit);
+                text.SetTextVariable("TROOP", recruit.Name);
                 InformationManager.DisplayMessage(new InformationMessage(
-                    new TextObject("{=TME002}Recruited {COUNT} {TROOP}.", 
-                        ("COUNT", toRecruit), 
-                        ("TROOP", recruit.Name)).ToString(),
+                    text.ToString(),
                     Colors.Cyan));
             }
         }
@@ -327,8 +329,10 @@ namespace TroopManagerEnhanced
 
             if (dismissed > 0 && settings.ShowNotifications)
             {
+                var text = new TextObject("{=TME003}Dismissed {COUNT} troops.");
+                text.SetTextVariable("COUNT", dismissed);
                 InformationManager.DisplayMessage(new InformationMessage(
-                    new TextObject("{=TME003}Dismissed {COUNT} troops.", ("COUNT", dismissed)).ToString(),
+                    text.ToString(),
                     Colors.Red));
             }
         }
