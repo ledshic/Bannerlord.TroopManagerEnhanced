@@ -6,6 +6,7 @@ using TaleWorlds.Core;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 
 namespace TroopManagerEnhanced
@@ -53,7 +54,7 @@ namespace TroopManagerEnhanced
             {
                 Debug.Print($"[TroopManagerEnhanced] ERROR in OnSubModuleLoad: {ex}");
                 InformationManager.DisplayMessage(new InformationMessage(
-                    "TroopManagerEnhanced failed to initialize Harmony. Check logs.",
+                    new TextObject("{=TME_INIT_FAIL}TroopManagerEnhanced failed to initialize Harmony. Check logs.").ToString(),
                     Colors.Red));
             }
         }

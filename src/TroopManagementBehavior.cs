@@ -245,7 +245,7 @@ namespace TroopManagerEnhanced
 
             if (settings.ShowNotifications)
             {
-                var text = new TextObject("{=TME002}Recruited {COUNT} {TROOP}.");
+                var text = new TextObject("{=TME_SETTLE_RECRUIT_001}Recruited {COUNT} {TROOP}.");
                 text.SetTextVariable("COUNT", toRecruit);
                 text.SetTextVariable("TROOP", recruit.Name);
                 InformationManager.DisplayMessage(new InformationMessage(
@@ -329,7 +329,7 @@ namespace TroopManagerEnhanced
 
             if (dismissed > 0 && settings.ShowNotifications)
             {
-                var text = new TextObject("{=TME003}Dismissed {COUNT} troops.");
+                var text = new TextObject("{=TME_DISMISS_001}Dismissed {COUNT} troops.");
                 text.SetTextVariable("COUNT", dismissed);
                 InformationManager.DisplayMessage(new InformationMessage(
                     text.ToString(),

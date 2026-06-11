@@ -101,6 +101,14 @@
           DestinationFolder="$(_ModulePath)bin\Win64_Shipping_Client"
           SkipUnchangedFiles="true" />
 
+    <ItemGroup>
+      <ModModuleDataFiles Include="$(MSBuildProjectDirectory)\ModuleData\**\*.*" />
+    </ItemGroup>
+
+    <Copy SourceFiles="@(ModModuleDataFiles)"
+          DestinationFiles="@(ModModuleDataFiles->'$(_ModulePath)ModuleData\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+
     <Message Text="TroopManagerEnhanced: Copied build output to _Module/bin/Win64_Shipping_Client" Importance="high" />
   </Target>
 

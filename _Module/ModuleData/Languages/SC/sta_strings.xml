@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/BUTR/Bannerlord.XmlSchemas/master/ModuleLanguage.xsd">
-  <tags>
-    <tag language="简体中文" />
-  </tags>
-  <strings>
+<strings>
   <!-- 
     TroopManagerEnhanced - 简体中文本地化 (Simplified Chinese)
     MCMv5 使用 {=KEY} 语法在 SettingProperty 属性中。
@@ -12,7 +7,7 @@
   -->
 
   <!-- General -->
-  <string id="TME_MainDisplay" text="部队管理增强 {VERSION}" />
+  <string id="TME_MainDisplay" text="部队管理增强" />
   <string id="TME_EnableMod" text="启用模组" />
   <string id="TME_EnableModHint" text="总开关。关闭后，所有自动部队操作都不会发生。" />
   <string id="TME_ShowNotifs" text="显示通知" />
@@ -120,27 +115,9 @@
   <string id="TME_PresetConserv" text="保守" />
 
   <!-- Runtime Messages -->
-  <string id="TME_PromoFreqDaily" text="每天一次（推荐，兼顾性能与平衡）" />
-  <string id="TME_PromoFreqHourly" text="每小时一次（响应更快）" />
-  <string id="TME_PromoFreqPartyTick" text="频繁随队伍/游戏 tick 检查（响应很快，CPU 占用更高）" />
-  <string id="TME_PromoModeVanilla" text="原版顺序 - 使用游戏定义的第一个升级目标（最可预测）" />
-  <string id="TME_PromoModeRandom" text="随机 - 每次选择一个有效升级分支" />
-  <string id="TME_PromoModeCulture" text="偏好玩家文化 - 优先选择与你的文化/王国匹配的分支" />
-  <string id="TME_PromoModeHighest" text="最高阶 - 总是选择可用目标中阶级最高者" />
-  <string id="TME_PromoModeLowestCost" text="最低费用 - 优先选择金币花费最低的升级选项" />
-
   <string id="TME_PROMO_001" text="晋升了 {PROMOTED} 名部队。" />
   <string id="TME_RECRUIT_001" text="将 {COUNT} 名囚犯招募进入你的部队。" />
   <string id="TME_ACCEL_01" text="加速招募 {TROOP}：招募了 {NUM} 名（花费 {COST} 金币）。" />
   <string id="TME_ACCEL_02" text="加速招募完成。共招募 {TOTAL} 名部队，花费 {GOLD} 金币。" />
-  <string id="TME_ACCEL_FAIL" text="加速招募失败。请查看日志。" />
-  <string id="TME_ACCEL_NONE" text="没有可加速招募的囚犯。" />
-  <string id="TME_ACCEL_NO_ROOM" text="部队已无更多空位。" />
-  <string id="TME_ACCEL_NO_GOLD" text="金币不足，无法招募 {TROOP}（需要 {COST}）。将跳过剩余招募。" />
-  <string id="TME_ACCEL_NO_RECRUITS" text="加速招募：未招募任何囚犯（金币或空位不足）。" />
-  <string id="TME_SETTLE_RECRUIT_001" text="招募了 {COUNT} 名 {TROOP}。" />
-  <string id="TME_DISMISS_001" text="解雇了 {COUNT} 名部队。" />
-  <string id="TME_INIT_FAIL" text="TroopManagerEnhanced 初始化 Harmony 失败。请查看日志。" />
 
-  </strings>
-</base>
+</strings>

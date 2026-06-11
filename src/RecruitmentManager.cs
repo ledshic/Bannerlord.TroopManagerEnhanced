@@ -232,7 +232,7 @@ namespace TroopManagerEnhanced
             catch (Exception ex)
             {
                 Debug.Print($"[TroopManagerEnhanced][AcceleratedRecruitment] Error: {ex}");
-                InformationManager.DisplayMessage(new InformationMessage("Accelerated recruitment failed. See logs.", Colors.Red));
+                InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=TME_ACCEL_FAIL}Accelerated recruitment failed. See logs.").ToString(), Colors.Red));
             }
         }
 
@@ -241,7 +241,7 @@ namespace TroopManagerEnhanced
             var prisonRoster = party.PrisonRoster;
             if (prisonRoster == null || prisonRoster.TotalManCount == 0)
             {
-                InformationManager.DisplayMessage(new InformationMessage("No prisoners to accelerate.", Colors.Gray));
+                InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=TME_ACCEL_NONE}No prisoners to accelerate.").ToString(), Colors.Gray));
                 return;
             }
 
@@ -252,7 +252,7 @@ namespace TroopManagerEnhanced
             int freeSlots = party.Party.PartySizeLimit - memberRoster.TotalManCount;
             if (freeSlots <= 0)
             {
-                InformationManager.DisplayMessage(new InformationMessage("No room in party for more troops.", Colors.Red));
+                InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=TME_ACCEL_NO_ROOM}No room in party for more troops.").ToString(), Colors.Red));
                 return;
             }
 
@@ -303,8 +303,10 @@ namespace TroopManagerEnhanced
 
                 if (hero.Gold < cost)
                 {
-                    InformationManager.DisplayMessage(new InformationMessage(
-                        $"Not enough gold for {troop.Name} (need {cost}). Skipping remaining.", Colors.Red));
+                    var text = new TextObject("{=TME_ACCEL_NO_GOLD}Not enough gold for {TROOP} (need {COST}). Skipping remaining.");
+                    text.SetTextVariable("TROOP", troop.Name);
+                    text.SetTextVariable("COST", cost);
+                    InformationManager.DisplayMessage(new InformationMessage(text.ToString(), Colors.Red));
                     break;
                 }
 
@@ -353,7 +355,7 @@ namespace TroopManagerEnhanced
             }
             else
             {
-                InformationManager.DisplayMessage(new InformationMessage("Accelerated recruitment: No prisoners were recruited (insufficient gold or slots).", Colors.Gray));
+                InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=TME_ACCEL_NO_RECRUITS}Accelerated recruitment: No prisoners were recruited (insufficient gold or slots).").ToString(), Colors.Gray));
             }
         }
 

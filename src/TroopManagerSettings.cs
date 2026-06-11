@@ -6,6 +6,7 @@ using MCM.Abstractions.Attributes.v2;
 using MCM.Abstractions.Base.Global;
 using MCM.Abstractions.Base.PerSave;
 using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.Localization;
 
 namespace TroopManagerEnhanced
 {
@@ -14,13 +15,13 @@ namespace TroopManagerEnhanced
     /// </summary>
     public enum PromotionFrequency
     {
-        [Description("Once per day (recommended for performance and balance)")]
+        [Description("{=TME_PromoFreqDaily}Once per day (recommended for performance and balance)")]
         Daily = 0,
 
-        [Description("Once per hour (more responsive)")]
+        [Description("{=TME_PromoFreqHourly}Once per hour (more responsive)")]
         Hourly = 1,
 
-        [Description("On frequent party/game ticks (very responsive, higher CPU)")]
+        [Description("{=TME_PromoFreqPartyTick}On frequent party/game ticks (very responsive, higher CPU)")]
         OnPartyTick = 2
     }
 
@@ -30,19 +31,19 @@ namespace TroopManagerEnhanced
     /// </summary>
     public enum PromotionSelectionMode
     {
-        [Description("Vanilla Order - Use the first upgrade target defined by the game (most predictable)")]
+        [Description("{=TME_PromoModeVanilla}Vanilla Order - Use the first upgrade target defined by the game (most predictable)")]
         VanillaFirst = 0,
 
-        [Description("Random - Pick a random valid upgrade branch each time")]
+        [Description("{=TME_PromoModeRandom}Random - Pick a random valid upgrade branch each time")]
         Random = 1,
 
-        [Description("Prefer Player Culture - Prioritize branches matching your culture/kingdom if available")]
+        [Description("{=TME_PromoModeCulture}Prefer Player Culture - Prioritize branches matching your culture/kingdom if available")]
         PreferPlayerCulture = 2,
 
-        [Description("Highest Tier - Always pick the highest tier available target (greedy power)")]
+        [Description("{=TME_PromoModeHighest}Highest Tier - Always pick the highest tier available target (greedy power)")]
         HighestTier = 3,
 
-        [Description("Lowest Cost - Pick the cheapest (gold) upgrade option first")]
+        [Description("{=TME_PromoModeLowestCost}Lowest Cost - Pick the cheapest (gold) upgrade option first")]
         LowestCost = 4
     }
 
@@ -66,7 +67,10 @@ namespace TroopManagerEnhanced
             get
             {
                 var ver = typeof(TroopManagerSettings).Assembly.GetName().Version?.ToString(3) ?? "1.0.0";
-                return $"{{=TME_MainDisplay}}Troop Manager Enhanced {ver}";
+                return new TextObject("{=TME_MainDisplay}Troop Manager Enhanced {VERSION}", new Dictionary<string, object>
+                {
+                    { "VERSION", ver }
+                }).ToString();
             }
         }
         public override string FolderName => "TroopManagerEnhanced";
