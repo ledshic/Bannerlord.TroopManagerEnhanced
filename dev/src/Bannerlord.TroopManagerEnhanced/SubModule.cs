@@ -3,8 +3,6 @@ using System.Reflection;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
-using TaleWorlds.CampaignSystem.Party;
-using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
@@ -91,44 +89,6 @@ namespace Bannerlord.TroopManagerEnhanced
         }
 
         // Additional lifecycle overrides (OnNewGameCreated, OnGameLoaded, etc.) can be added here if needed in the future.
-
-        /// <summary>
-        /// Simple hotkey support for Feature 3 (Accelerated Recruitment).
-        /// Default: Left Ctrl + R (while in a campaign with a main party).
-        /// Feel free to change the key combination.
-        /// For a more polished experience, consider adding a proper button via UIExtenderEx on the Gauntlet Party/Prisoner screen (advanced).
-        /// </summary>
-        protected override void OnApplicationTick(float dt)
-        {
-            base.OnApplicationTick(dt);
-
-            try
-            {
-                // Only allow in campaign mode
-                if (Campaign.Current == null || Hero.MainHero == null)
-                    return;
-
-                var settings = TroopManagerSettings.Instance;
-                if (settings == null || !settings.AcceleratedRecruitmentEnabled || !settings.AcceleratedRecruitmentHotkeyEnabled)
-                    return;
-
-                // Hotkey: Ctrl + R
-                bool ctrl = Input.IsKeyDown(InputKey.LeftControl) || Input.IsKeyDown(InputKey.RightControl);
-                bool keyPressed = Input.IsKeyPressed(InputKey.R);
-
-                if (ctrl && keyPressed)
-                {
-                    var party = MobileParty.MainParty;
-                    if (party != null && party.IsActive)
-                    {
-                        RecruitmentManager.AccelerateRecruitment(party, settings);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.Print($"[TroopManagerEnhanced] Hotkey error in OnApplicationTick: {ex}");
-            }
-        }
+        // (Accelerated recruitment hotkey (Ctrl+R) removed along with the feature.)
     }
 }

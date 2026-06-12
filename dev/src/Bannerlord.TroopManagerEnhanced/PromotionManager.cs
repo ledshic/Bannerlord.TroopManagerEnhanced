@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
@@ -12,48 +11,34 @@ using TaleWorlds.Localization;
 namespace Bannerlord.TroopManagerEnhanced
 {
     /// <summary>
-    /// Main manager class responsible for Automatic Promotion (troop upgrading) logic.
+    /// Promotion manager.
     ///
-    /// Design principles (best practices for Bannerlord modding):
-    /// - All cost and eligibility decisions go through the VANILLA IPartyTroopUpgradeModel.
-    /// - We only perform the actual roster mutation + gold payment after the model has approved the numbers.
-    /// - We respect the exact same data structures the game uses (TroopRosterElement, UpgradeTargets, XP per element).
-    /// - No invention of new upgrade rules. We borrow the game's internal upgrade paths.
-    /// - Multi-branch selection (when a troop has 2+ possible upgrades) is the only "mod" decision.
-    /// - Cost multiplier is applied transparently on top of vanilla costs (player sees effective cost in notifications if wanted).
-    /// - Party size is never an issue for promotions (1 troop in → 1 troop out).
-    ///
-    /// This class is intentionally stateless except for a last-run timestamp (used for frequency throttling).
-    /// It can be called from DailyTick, HourlyTick, or a high-frequency Tick with internal throttling.
+    /// Fixed logic (per request):
+    /// - Runs on daily tick (called from behavior).
+    /// - Only promotes soldiers/stacks that have "full EXP standing by":
+    ///     ready = (xpCost > 0) ? (availableXp / xpCost) : count
+    ///   i.e. we only upgrade whole soldiers who have accumulated the full required XP for their next tier.
+    /// - If a troop has multiple upgrade paths, pick one at random.
+    /// - Still respects gold reserve + configurable cost multiplier + max per day cap.
+    /// - No more frequency modes, no selection mode dropdown, no multi-tier chaining in one pass, no wounded skip (kept simple).
+    /// - Uses vanilla PartyTroopUpgradeModel for costs/eligibility.
     /// </summary>
     public class PromotionManager
     {
-        private CampaignTime _lastPromotionRun = CampaignTime.Zero;
-
         /// <summary>
-        /// Entry point called by the behavior on various ticks.
-        /// Decides whether to run based on MCM frequency setting + elapsed time.
+        /// Daily entry point (the only one used now).
         /// </summary>
-        public void TryPerformPromotions(MobileParty party, TroopManagerSettings settings)
+        public void TryPerformDailyPromotions(MobileParty party, TroopManagerSettings settings)
         {
             if (party == null || !party.IsActive || party != MobileParty.MainParty)
                 return;
 
-            // Only the player's main land party (ignore naval/ship parties)
-            if (party != MobileParty.MainParty) return;
-
-            if (settings == null || !settings.ModEnabled)
-                return;
-
-            if (!settings.AutoPromotionEnabled)
-                return;
-
-            if (!ShouldRunNow(settings.PromotionFrequency))
+            if (settings == null || !settings.ModEnabled || !settings.AutoPromotionEnabled)
                 return;
 
             try
             {
-                int promotedCount = PerformPromotionsInternal(party, settings);
+                int promotedCount = PerformDailyPromotionsInternal(party, settings);
 
                 if (promotedCount > 0 && settings.ShowNotifications)
                 {
@@ -61,8 +46,6 @@ namespace Bannerlord.TroopManagerEnhanced
                     text.SetTextVariable("PROMOTED", promotedCount);
                     InformationManager.DisplayMessage(new InformationMessage(text.ToString(), Colors.Green));
                 }
-
-                _lastPromotionRun = CampaignTime.Now;
             }
             catch (Exception ex)
             {
@@ -71,63 +54,11 @@ namespace Bannerlord.TroopManagerEnhanced
         }
 
         /// <summary>
-        /// Force version for MCM buttons / hotkeys. Ignores the time throttle.
+        /// Core daily promotion pass.
+        /// Only stacks with full-EXP soldiers (ready count > 0) are considered.
+        /// Random branch selection when >1 upgrade target.
         /// </summary>
-        public void ForcePerformPromotions(MobileParty party, TroopManagerSettings settings)
-        {
-            if (party == null || !party.IsActive || party != MobileParty.MainParty) return;
-            if (settings == null || !settings.ModEnabled) return;
-
-            // War Sails / 1.4.5+ safety
-            if (party != MobileParty.MainParty) return;
-
-            if (!settings.AutoPromotionEnabled) return;
-
-            try
-            {
-                int promotedCount = PerformPromotionsInternal(party, settings);
-
-                if (promotedCount > 0 && settings.ShowNotifications)
-                {
-                    var text = new TextObject("{=TME_PROMO_001}Promoted {PROMOTED} troops.", null);
-                    text.SetTextVariable("PROMOTED", promotedCount);
-                    InformationManager.DisplayMessage(new InformationMessage(text.ToString(), Colors.Green));
-                }
-
-                _lastPromotionRun = CampaignTime.Now;
-            }
-            catch (Exception ex)
-            {
-                Debug.Print($"[TroopManagerEnhanced][Promotion] Force error: {ex}");
-            }
-        }
-
-        private bool ShouldRunNow(PromotionFrequency frequency)
-        {
-            if (_lastPromotionRun == CampaignTime.Zero)
-                return true;
-
-            double hoursSinceLast = (CampaignTime.Now - _lastPromotionRun).ToHours;
-
-            switch (frequency)
-            {
-                case PromotionFrequency.Daily:
-                    return hoursSinceLast >= 23.5; // almost a full day, tolerant of tick ordering
-                case PromotionFrequency.Hourly:
-                    return hoursSinceLast >= 0.95;
-                case PromotionFrequency.OnPartyTick:
-                    return hoursSinceLast >= 0.08; // roughly every 5 in-game minutes (very frequent)
-                default:
-                    return hoursSinceLast >= 23.5;
-            }
-        }
-
-        /// <summary>
-        /// Core promotion pass. Scans the roster from the end (safe for mutation), calculates
-        /// exactly how many of each stack can be promoted using vanilla XP + gold rules, chooses
-        /// the target according to player preference, applies multiplier, pays gold, mutates roster.
-        /// </summary>
-        private int PerformPromotionsInternal(MobileParty party, TroopManagerSettings settings)
+        private int PerformDailyPromotionsInternal(MobileParty party, TroopManagerSettings settings)
         {
             var roster = party.MemberRoster;
             if (roster == null || roster.TotalManCount <= 0)
@@ -144,17 +75,11 @@ namespace Bannerlord.TroopManagerEnhanced
 
             float costMultiplier = Math.Max(0.1f, Math.Min(5f, settings.PromotionCostMultiplier));
             int maxThisPass = Math.Max(1, settings.MaxPromotionsPerCheck);
-            bool allowMultiTier = settings.AllowMultiTierInOnePass;
-            bool skipWounded = settings.SkipWoundedForPromotion;
-            var selectionMode = settings.PromotionSelectionMode;
-
-            CultureObject? playerCulture = Hero.MainHero?.Culture ?? party.LeaderHero?.Culture;
 
             int totalPromoted = 0;
             int goldSpent = 0;
 
-            // Iterate backwards – safe when we call AddToCounts (which can change count but we re-evaluate from end each time conceptually).
-            // We also support limited multi-tier chaining within the same stack's "budget" of XP.
+            // Backwards iteration for safe roster mutation via AddToCounts.
             for (int i = roster.Count - 1; i >= 0 && totalPromoted < maxThisPass; i--)
             {
                 TroopRosterElement element = roster.GetElementCopyAtIndex(i);
@@ -164,192 +89,74 @@ namespace Bannerlord.TroopManagerEnhanced
                     continue;
 
                 if (fromTroop.UpgradeTargets == null || fromTroop.UpgradeTargets.Length == 0)
-                    continue; // cannot be promoted – dead end or hero, etc.
-
-                if (skipWounded && element.WoundedNumber > 0)
                     continue;
 
                 int availableXp = roster.GetElementXp(i);
                 if (availableXp < 0) availableXp = 0;
 
-                // Get candidate targets ordered according to player preference
-                var orderedTargets = GetOrderedUpgradeTargets(
-                    fromTroop,
-                    selectionMode,
-                    playerCulture,
-                    upgradeModel,
-                    party.Party,
-                    costMultiplier);
+                // Pick target: random if multiple choices (as requested).
+                CharacterObject? target = ChooseUpgradeTargetRandom(fromTroop);
+                if (target == null)
+                    continue;
 
-                foreach (var target in orderedTargets)
-                {
-                    if (totalPromoted >= maxThisPass)
-                        break;
+                // Vanilla costs
+                int xpCost = upgradeModel.GetXpCostForUpgrade(party.Party, fromTroop, target);
+                int baseGoldCost = upgradeModel.GetGoldCostForUpgrade(party.Party, fromTroop, target).RoundedResultNumber;
+                int effectiveGoldCost = (int)(baseGoldCost * costMultiplier);
+                if (effectiveGoldCost < 0) effectiveGoldCost = 0;
 
-                    // Ask the VANILLA model for the true costs
-                    int xpCost = upgradeModel.GetXpCostForUpgrade(party.Party, fromTroop, target);
-                    int baseGoldCost = upgradeModel.GetGoldCostForUpgrade(party.Party, fromTroop, target).RoundedResultNumber;
-                    int effectiveGoldCost = (int)(baseGoldCost * costMultiplier);
+                // FULL EXP check: how many soldiers in this stack have accumulated the full required XP?
+                int readyCount = (xpCost <= 0) ? element.Number : (availableXp / xpCost);
+                if (readyCount <= 0)
+                    continue;   // Not "full exp stand by" -- skip this stack for today.
 
-                    if (effectiveGoldCost < 0) effectiveGoldCost = 0;
+                // Gold affordability
+                int affordable = (effectiveGoldCost <= 0)
+                    ? element.Number
+                    : (playerGold - goldReserve - goldSpent) / effectiveGoldCost;
 
-                    // How many can we do limited by XP?
-                    int byXp = (xpCost <= 0) ? element.Number : (availableXp / xpCost);
+                int num = Math.Min(element.Number, Math.Min(readyCount, affordable));
+                num = Math.Min(num, maxThisPass - totalPromoted);
 
-                    // How many can we afford?
-                    int affordable = (effectiveGoldCost <= 0)
-                        ? element.Number
-                        : (playerGold - goldReserve - goldSpent) / effectiveGoldCost;
+                if (num <= 0)
+                    continue;
 
-                    int num = Math.Min(element.Number, Math.Min(byXp, affordable));
-                    num = Math.Min(num, maxThisPass - totalPromoted);
+                // Apply (vanilla roster pattern)
+                roster.AddToCounts(fromTroop, -num);
+                roster.AddToCounts(target, num);
 
-                    if (num <= 0)
-                        continue;
+                int actualCost = effectiveGoldCost * num;
+                if (Hero.MainHero != null)
+                    Hero.MainHero.ChangeHeroGold(-actualCost);
 
-                    // === APPLY THE PROMOTION (vanilla-style roster change + gold payment) ===
-                    // This is the same pattern used internally by PartyUpgraderCampaignBehavior after it decides who is ready.
-
-                    // 1. Remove old troops (XP for the remaining low-tier members stays with the reduced stack)
-                    roster.AddToCounts(fromTroop, -num);
-
-                    // 2. Add upgraded troops (they start with 0 XP toward their own next tier – this is vanilla behavior)
-                    roster.AddToCounts(target, num);
-
-                    // 3. Pay the (modified) gold cost
-                    int actualCostThisUpgrade = effectiveGoldCost * num;
-                    if (Hero.MainHero != null)
-                    {
-                        Hero.MainHero.ChangeHeroGold(-actualCostThisUpgrade);
-                    }
-
-                    // 4. Consume the XP that was used for these promotions from the original element's perspective.
-                    // Because we already removed some of the stack, the XP left on the (possibly smaller) remaining stack
-                    // is still correct for the survivors. We don't need to manually touch XP here for the promoted ones.
-                    // If there were leftover XP on the old stack and we didn't promote everyone, it remains for future.
-                    availableXp -= (xpCost * num);
-
-                    goldSpent += actualCostThisUpgrade;
-                    totalPromoted += num;
-
-                    // Optional: immediately try to promote the *newly created* upgraded troops further this pass.
-                    // This only has effect if the newly promoted troops somehow already have XP (rare) or if xpCost was 0.
-                    // Still useful for certain edge cases / modded troops with very low requirements.
-                    if (allowMultiTier && num > 0 && target.UpgradeTargets != null && target.UpgradeTargets.Length > 0)
-                    {
-                        // We just added them. Find the new stack index for the target and see if we can chain.
-                        // For simplicity and safety we do a limited recursive-style attempt here without full re-scan.
-                        int chained = TryChainPromotionOnNewlyPromoted(
-                            roster,
-                            target,
-                            upgradeModel,
-                            party,
-                            playerGold - goldReserve - goldSpent,
-                            costMultiplier,
-                            maxThisPass - totalPromoted,
-                            playerCulture,
-                            selectionMode,
-                            out int chainedGoldSpent);
-
-                        totalPromoted += chained;
-                        goldSpent += chainedGoldSpent;
-                    }
-
-                    // If we don't want to try other branches for this original stack, break.
-                    // (We already chose the "best" according to ordering.)
-                    break;
-                }
-
-                // If we promoted from this stack and multi-tier is on, the loop will naturally look at other stacks.
-                // Real multi-tier progress for the same lineage usually requires more XP from battles.
+                goldSpent += actualCost;
+                totalPromoted += num;
             }
 
             return totalPromoted;
         }
 
         /// <summary>
-        /// After promoting some troops to 'newTierTroop', immediately see if those new troops can be promoted further
-        /// right now (only possible in practice if their upgrade has 0 XP cost or they inherited some XP).
-        /// This is a best-effort limited helper.
+        /// If multiple upgrade paths, pick one uniformly at random.
+        /// Otherwise return the single (or null) target.
         /// </summary>
-        private int TryChainPromotionOnNewlyPromoted(
-            TroopRoster roster,
-            CharacterObject newlyPromotedTroop,
-            PartyTroopUpgradeModel upgradeModel,
-            MobileParty party,
-            int remainingGoldBudget,
-            float costMultiplier,
-            int maxRemaining,
-            CultureObject? playerCulture,
-            PromotionSelectionMode selectionMode,
-            out int goldSpentInChain)
+        private static CharacterObject? ChooseUpgradeTargetRandom(CharacterObject fromTroop)
         {
-            goldSpentInChain = 0;
+            var targets = fromTroop.UpgradeTargets?.Where(t => t != null).ToArray() ?? Array.Empty<CharacterObject>();
+            if (targets.Length == 0)
+                return null;
+            if (targets.Length == 1)
+                return targets[0];
 
-            if (maxRemaining <= 0 || newlyPromotedTroop.UpgradeTargets == null || newlyPromotedTroop.UpgradeTargets.Length == 0)
-                return 0;
-
-            // Find the current stack for the newly promoted type
-            int newStackIndex = -1;
-            TroopRosterElement newElement = default;
-
-            for (int j = 0; j < roster.Count; j++)
-            {
-                var el = roster.GetElementCopyAtIndex(j);
-                if (el.Character == newlyPromotedTroop)
-                {
-                    newStackIndex = j;
-                    newElement = el;
-                    break;
-                }
-            }
-
-            if (newStackIndex < 0 || newElement.Number <= 0)
-                return 0;
-
-            int xp = roster.GetElementXp(newStackIndex);
-            if (xp < 0) xp = 0;
-
-            var ordered = GetOrderedUpgradeTargets(
-                newlyPromotedTroop, selectionMode, playerCulture, upgradeModel, party.Party, costMultiplier);
-
-            int chained = 0;
-
-            foreach (var nextTarget in ordered)
-            {
-                if (chained >= maxRemaining) break;
-
-                int xpCost = upgradeModel.GetXpCostForUpgrade(party.Party, newlyPromotedTroop, nextTarget);
-                int baseGold = upgradeModel.GetGoldCostForUpgrade(party.Party, newlyPromotedTroop, nextTarget).RoundedResultNumber;
-                int effGold = (int)(baseGold * costMultiplier);
-
-                int byXp = (xpCost <= 0) ? newElement.Number : (xp / xpCost);
-                int byGold = (effGold <= 0) ? newElement.Number : (remainingGoldBudget / effGold);
-
-                int num = Math.Min(newElement.Number, Math.Min(byXp, byGold));
-                num = Math.Min(num, maxRemaining - chained);
-
-                if (num <= 0) continue;
-
-                roster.AddToCounts(newlyPromotedTroop, -num);
-                roster.AddToCounts(nextTarget, num);
-
-                int thisCost = effGold * num;
-                if (Hero.MainHero != null)
-                    Hero.MainHero.ChangeHeroGold(-thisCost);
-
-                goldSpentInChain += thisCost;
-                chained += num;
-                remainingGoldBudget -= thisCost;
-                // Note: newly promoted from this new tier start with low/zero XP again.
-            }
-
-            return chained;
+            // Simple random pick (seeded from current campaign time for some determinism between saves but random per day)
+            int seed = (int)(CampaignTime.Now.ToSeconds % 9973) ^ targets.Length;
+            var rnd = new Random(seed);
+            return targets[rnd.Next(targets.Length)];
         }
 
         /// <summary>
-        /// Static helper for MCM "Force" buttons and hotkeys.
-        /// Forces an immediate promotion pass on the main party, respecting current settings (gold reserve, multipliers, selection mode, etc.).
+        /// Static helper for the "Force Auto Promotion Now" MCM button.
+        /// Immediately runs a promotion pass (respects gold/cost/max settings).
         /// </summary>
         public static void ForcePromotionPass(MobileParty party, TroopManagerSettings settings)
         {
@@ -357,65 +164,9 @@ namespace Bannerlord.TroopManagerEnhanced
                 return;
 
             var manager = new PromotionManager();
-            manager.ForcePerformPromotions(party, settings);
+            manager.TryPerformDailyPromotions(party, settings);  // reuse the same logic for force
 
-            Debug.Print("[TroopManagerEnhanced] Force Promotion requested via MCM/button/hotkey.");
-        }
-
-        /// <summary>
-        /// Returns the list of possible upgrade targets sorted according to the player's chosen selection mode.
-        /// This is the "AI" decision part of the feature. Everything else tries to stay as close to vanilla as possible.
-        /// </summary>
-        private List<CharacterObject> GetOrderedUpgradeTargets(
-            CharacterObject fromTroop,
-            PromotionSelectionMode mode,
-            CultureObject? playerCulture,
-            PartyTroopUpgradeModel upgradeModel,
-            PartyBase partyBaseForCosts,
-            float costMultiplier)
-        {
-            var targets = fromTroop.UpgradeTargets?.Where(t => t != null).ToList() ?? new List<CharacterObject>();
-
-            if (targets.Count <= 1)
-                return targets;
-
-            switch (mode)
-            {
-                case PromotionSelectionMode.Random:
-                    // Fisher-Yates shuffle for true randomness per check
-                    var rnd = new Random((int)(CampaignTime.Now.ToSeconds % int.MaxValue));
-                    for (int n = targets.Count - 1; n > 0; n--)
-                    {
-                        int k = rnd.Next(n + 1);
-                        var temp = targets[k];
-                        targets[k] = targets[n];
-                        targets[n] = temp;
-                    }
-                    return targets;
-
-                case PromotionSelectionMode.PreferPlayerCulture:
-                    return targets
-                        .OrderByDescending(t => (t.Culture != null && playerCulture != null && t.Culture == playerCulture) ? 100 : 0)
-                        .ThenByDescending(t => t.Tier)
-                        .ToList();
-
-                case PromotionSelectionMode.HighestTier:
-                    return targets.OrderByDescending(t => t.Tier).ToList();
-
-                case PromotionSelectionMode.LowestCost:
-                    return targets
-                        .OrderBy(t =>
-                        {
-                            int g = upgradeModel.GetGoldCostForUpgrade(partyBaseForCosts, fromTroop, t).RoundedResultNumber;
-                            return (int)(g * costMultiplier);
-                        })
-                        .ToList();
-
-                case PromotionSelectionMode.VanillaFirst:
-                default:
-                    // Return in the order the game defined them (first target is usually the "default" branch)
-                    return targets;
-            }
+            Debug.Print("[TroopManagerEnhanced] Force Promotion requested via MCM button.");
         }
     }
 }

@@ -7,21 +7,17 @@ A quality-of-life mod for Mount & Blade II: Bannerlord that automates common tro
 ## Features (all configurable via MCM)
 
 ### Automatic Promotion
-- Periodically promotes eligible troops in your main party using vanilla `IPartyTroopUpgradeModel` (correct XP + gold costs).
-- Multiple upgrade path selection strategies: Vanilla First, Random, Prefer Player Culture, Highest Tier, Lowest Cost.
-- Configurable cost multiplier, gold reserve floor, max promotions per check, skip wounded, multi-tier chaining, etc.
-- Smart, non-cheaty behavior that follows the game's own troop trees and models.
+- Every day, checks soldiers in your main party that have full required EXP standing by for promotion (using vanilla `IPartyTroopUpgradeModel` XP costs).
+- Promotes them (respecting gold reserve + configurable cost multiplier + max-per-day cap).
+- If a troop has multiple possible upgrade paths, picks one at random.
+- Uses exact vanilla costs and roster operations. No more promoting without sufficient EXP.
 
-### Auto Prisoner Recruit + Accelerated Recruitment
-- Auto-recruits qualifying prisoners.
-- "Accelerated" (pay with gold based on daily wage) recruitment with hotkey support (default Ctrl+R).
-- Many tuning options (tier thresholds, conformity bypass, full-stack mode...).
+### Auto Prisoner Recruit
+- Every day, checks prisoners' conformity (using `PrisonerRecruitmentModel.GetConformityNeededToRecruitPrisoner` + the prison roster's conformity tracking).
+- Recruits only those "standing by" for recruitment (conformity met), up to available party slots + configurable limits (min tier, only existing types, high-tier priority, max per day).
+- Vanilla-style roster transfer from prison to party members.
 
-### Settlement Auto Recruit & Auto Dismiss
-- Fills your party with basic recruits from the current settlement's culture when below target %.
-- Cleans up excess low-tier or heavily wounded troops when near capacity.
-
-All actions are optional, throttled, and produce (optional) notifications.
+All actions are optional, produce (optional) notifications, and run only on the daily tick for performance and natural game rhythm. "Force ... Now" buttons allow manual triggers.
 
 ## Dependencies (load these **before** this mod)
 
@@ -55,8 +51,8 @@ All actions are optional, throttled, and produce (optional) notifications.
 
 Full support for both:
 
-- **MCM UI**: All setting names, group headers, hints, dropdown descriptions, and presets use `{=TME_...}` keys and are translated via `ModuleData/Languages/`.
-- **In-game messages**: Promotion, recruitment, dismissal, and error notifications are localized.
+- **MCM UI**: All setting names, group headers, hints, and descriptions use `{=TME_...}` keys and are translated via `ModuleData/Languages/`.
+- **In-game messages**: Promotion, recruitment, and error notifications are localized.
 
 **Included**:
 - English (complete)
@@ -70,7 +66,7 @@ After loading a campaign, go to **Mod Options**. Everything lives under **Troop 
 
 Settings are **global** (JSON) — not per-save.
 
-There are built-in presets (Balanced / Aggressive / Conservative) plus many individual toggles and numeric options. "Force ... Now" toggles act as one-shot buttons.
+Core toggles for the two features, plus focused numeric options for cost, reserves, caps, and tiers. "Force ... Now" toggles act as one-shot buttons for immediate runs.
 
 ## Building from Source (Unified Layout)
 
@@ -106,9 +102,10 @@ The csproj uses direct game references (configure `GameFolder` or the GAMEFOLDER
 
 ## Development Notes
 
-- Core logic lives in dedicated managers (`PromotionManager`, `RecruitmentManager`, etc.).
-- Most behavior is event-driven + vanilla models (very compatible).
-- Harmony is initialized for future patches but currently lightly used.
+- Core logic lives in dedicated managers (`PromotionManager` for daily full-EXP + random branch promotions; `RecruitmentManager` for daily conformity-based prisoner recruitment).
+- Behavior is now a very thin daily-tick orchestration layer only.
+- Everything uses vanilla models (`PartyTroopUpgradeModel`, `PrisonerRecruitmentModel`) and roster operations for maximum compatibility.
+- Harmony is initialized for future patches but currently lightly used (see `PromotionPatches.cs` placeholder).
 - See `CHANGELOG.md` and `FOLLOWUPS.md` (if present) for history and ideas.
 
 ## Credits
