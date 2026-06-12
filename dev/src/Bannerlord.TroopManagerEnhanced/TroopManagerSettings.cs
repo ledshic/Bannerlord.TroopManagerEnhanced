@@ -7,7 +7,7 @@ using MCM.Abstractions.Base.Global;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Localization;
 
-namespace TroopManagerEnhanced
+namespace Bannerlord.TroopManagerEnhanced
 {
     /// <summary>
     /// Promotion frequency options (how often the Automatic Promotion logic runs).
@@ -60,7 +60,7 @@ namespace TroopManagerEnhanced
     /// </summary>
     public sealed class TroopManagerSettings : AttributeGlobalSettings<TroopManagerSettings>
     {
-        public override string Id => "TroopManagerEnhanced_v1";
+        public override string Id => "Bannerlord.TroopManagerEnhanced_v1";
         public override string DisplayName
         {
             get
@@ -72,7 +72,7 @@ namespace TroopManagerEnhanced
                 }).ToString();
             }
         }
-        public override string FolderName => "TroopManagerEnhanced";
+        public override string FolderName => "Bannerlord.TroopManagerEnhanced";
         public override string FormatType => "json";
 
         // Example of using Fluent Builder as alternative (call from SubModule if you prefer runtime registration over attributes):

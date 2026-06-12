@@ -5,7 +5,7 @@ using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 
-namespace TroopManagerEnhanced
+namespace Bannerlord.TroopManagerEnhanced
 {
     /// <summary>
     /// Optional helper class for troop-related utilities.

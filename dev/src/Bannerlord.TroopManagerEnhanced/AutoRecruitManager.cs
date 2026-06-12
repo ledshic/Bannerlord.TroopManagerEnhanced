@@ -6,7 +6,7 @@ using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 
-namespace TroopManagerEnhanced
+namespace Bannerlord.TroopManagerEnhanced
 {
     /// <summary>
     /// Manager responsible for Settlement-based Auto Recruit (filling the party with basic recruits).

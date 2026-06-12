@@ -1,0 +1,51 @@
+name: Build And Release Mod
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version tag (example: v1.0.0)"
+        required: true
+        default: v1.0.0
+      prerelease:
+        description: Mark release as pre-release
+        required: true
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Build & Package (via unified script)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $version = "${{ github.event.inputs.version }}"
+          ./dev/build.ps1 -Version $version
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bannerlord-troop-manager-enhanced-${{ github.event.inputs.version }}
+          path: out/Bannerlord.TroopManagerEnhanced-${{ github.event.inputs.version }}.zip
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.version }}
+          name: Bannerlord Troop Manager Enhanced ${{ github.event.inputs.version }}
+          prerelease: ${{ github.event.inputs.prerelease }}
+          files: out/Bannerlord.TroopManagerEnhanced-${{ github.event.inputs.version }}.zip

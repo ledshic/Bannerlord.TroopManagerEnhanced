@@ -18,11 +18,11 @@
     <Platforms>AnyCPU;x64</Platforms>
 
     <!-- Mod identity -->
-    <AssemblyName>TroopManagerEnhanced</AssemblyName>
-    <RootNamespace>TroopManagerEnhanced</RootNamespace>
+    <AssemblyName>Bannerlord.TroopManagerEnhanced</AssemblyName>
+    <RootNamespace>Bannerlord.TroopManagerEnhanced</RootNamespace>
     <Version>1.0.0</Version>
     <Authors>YourName</Authors>
-    <Product>TroopManagerEnhanced</Product>
+    <Product>Bannerlord.TroopManagerEnhanced</Product>
     <Description>Automated troop upgrade, recruit, and management for Bannerlord player parties. MCM configurable.</Description>
 
     <!-- Output: we copy via PostBuild to the _Module structure -->
@@ -98,6 +98,8 @@
        Note: Version in _Module/SubModule.xml is kept in sync by build.ps1 (recommended packaging script).
        This target runs automatically on `dotnet build`. -->
   <Target Name="CopyToModule" AfterTargets="Build">
+    <!-- Note: With the unified dev/ layout, packaging is primarily handled by dev/build.ps1.
+         This target is kept for quick iteration convenience and points to a _Module at mod root. -->
     <ItemGroup>
       <ModOutputFiles Include="$(OutputPath)$(AssemblyName).dll" />
       <ModOutputFiles Include="$(OutputPath)$(AssemblyName).pdb" Condition="Exists('$(OutputPath)$(AssemblyName).pdb')" />
@@ -108,19 +110,20 @@
           SkipUnchangedFiles="true" />
 
     <ItemGroup>
-      <ModModuleDataFiles Include="$(MSBuildProjectDirectory)\ModuleData\**\*.*" />
+      <ModModuleDataFiles Include="$(MSBuildProjectDirectory)\..\..\..\module\ModuleData\**\*.*" />
     </ItemGroup>
 
     <Copy SourceFiles="@(ModModuleDataFiles)"
           DestinationFiles="@(ModModuleDataFiles->'$(_ModulePath)ModuleData\%(RecursiveDir)%(Filename)%(Extension)')"
           SkipUnchangedFiles="true" />
 
-    <Message Text="TroopManagerEnhanced: Copied build output + ModuleData to _Module/" Importance="high" />
+    <Message Text="Bannerlord.TroopManagerEnhanced: Copied build output + ModuleData to _Module/" Importance="high" />
   </Target>
 
-  <!-- Convenience: define _ModulePath relative to project -->
+  <!-- Convenience: define _ModulePath relative to project (for quick dotnet build iteration).
+       From dev/src/Bannerlord.TroopManagerEnhanced/ this reaches the mod root _Module. -->
   <PropertyGroup>
-    <_ModulePath>$(MSBuildProjectDirectory)\_Module\</_ModulePath>
+    <_ModulePath>$(MSBuildProjectDirectory)\..\..\..\ _Module\</_ModulePath>
   </PropertyGroup>
 
   <!-- Optional: Strong naming / signing not usually needed for Bannerlord mods -->

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Module>
-  <Name value="TroopManagerEnhanced"/>
-  <Id value="TroopManagerEnhanced"/>
-  <Version value="v1.0.0"/>
+  <Name value="Bannerlord Troop Manager Enhanced"/>
+  <Id value="Bannerlord.TroopManagerEnhanced"/>
+  <Version value="__VERSION__"/>
   <DefaultModule value="false"/>
   <SingleplayerModule value="true"/>
   <MultiplayerModule value="false"/>
@@ -28,11 +28,11 @@
 
   <SubModules>
     <SubModule>
-      <Name value="TroopManagerEnhanced"/>
+      <Name value="Bannerlord.TroopManagerEnhanced"/>
       <!-- The DLL that contains your SubModule class -->
-      <DLLName value="TroopManagerEnhanced.dll"/>
+      <DLLName value="Bannerlord.TroopManagerEnhanced.dll"/>
       <!-- Fully qualified class name: Namespace.Class -->
-      <SubModuleClassType value="TroopManagerEnhanced.SubModule"/>
+      <SubModuleClassType value="Bannerlord.TroopManagerEnhanced.SubModule"/>
       <Tags>
         <!-- Dedicated servers: none (this is a singleplayer QoL mod) -->
         <Tag key="DedicatedServerType" value="none"/>

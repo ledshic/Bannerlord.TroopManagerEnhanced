@@ -9,7 +9,7 @@ using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 
-namespace TroopManagerEnhanced
+namespace Bannerlord.TroopManagerEnhanced
 {
     /// <summary>
     /// Campaign behavior that performs automated troop management on daily (and optionally hourly / party-tick) events.

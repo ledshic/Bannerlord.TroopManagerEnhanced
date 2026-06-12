@@ -9,7 +9,7 @@ using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 
-namespace TroopManagerEnhanced
+namespace Bannerlord.TroopManagerEnhanced
 {
     /// <summary>
     /// Main entry point for the TroopManagerEnhanced mod.
@@ -18,7 +18,7 @@ namespace TroopManagerEnhanced
     public class SubModule : MBSubModuleBase
     {
         // Use a unique Harmony ID. Reverse domain or mod id is conventional.
-        private const string HarmonyId = "TroopManagerEnhanced";
+        private const string HarmonyId = "Bannerlord.TroopManagerEnhanced";
 
         private Harmony? _harmony;
 
@@ -40,7 +40,7 @@ namespace TroopManagerEnhanced
                 // See Bannerlord UIExtenderEx documentation for PartyVM / PrisonerListVM mixins.
 
                 // Optional: Log that we loaded (visible in launcher logs / debug).
-                Debug.Print($"[TroopManagerEnhanced] SubModule loaded. Harmony patches applied. v{typeof(SubModule).Assembly.GetName().Version}");
+                Debug.Print($"[Bannerlord.TroopManagerEnhanced] SubModule loaded. Harmony patches applied. v{typeof(SubModule).Assembly.GetName().Version}");
             }
             catch (Exception ex)
             {
@@ -86,7 +86,7 @@ namespace TroopManagerEnhanced
                 // Add our main behavior that drives the troop management logic on ticks.
                 campaignStarter.AddBehavior(new TroopManagementBehavior());
 
-                Debug.Print("[TroopManagerEnhanced] TroopManagementBehavior registered for campaign.");
+                Debug.Print("[Bannerlord.TroopManagerEnhanced] TroopManagementBehavior registered for campaign.");
             }
         }
 

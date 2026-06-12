@@ -5,7 +5,7 @@ using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Library;
 
-namespace TroopManagerEnhanced
+namespace Bannerlord.TroopManagerEnhanced
 {
     /// <summary>
     /// Placeholder for optional advanced Harmony patches.
