@@ -2,18 +2,18 @@
 
 A quality-of-life mod for Mount & Blade II: Bannerlord that automates common troop management tasks for the player's party.
 
-**Target**: Bannerlord 1.4.5 + War Sails 1.2.5 (and compatible later patches)
+**Target**: Bannerlord 1.2.12+ (e1.2 branch) and later patches (originally designed & tested on 1.4.5 + War Sails)
 
 **Tested / Designed For**:
-- Mount & Blade II: Bannerlord v1.4.5
-- War Sails DLC v1.2.5
+- Mount & Blade II: Bannerlord (e1.2 branch, 1.2.12+)
+- War Sails DLC support (naval parties are safely ignored)
 
-The mod primarily manipulates `MobileParty.MainParty` using high-level vanilla models (`IPartyTroopUpgradeModel`, `PartyWageModel`, roster operations). It has low risk of conflicting with naval content.
+The mod primarily manipulates `MobileParty.MainParty` using high-level vanilla models (`IPartyTroopUpgradeModel`, `PartyWageModel`, roster operations). It safely ignores naval/ship parties.
 
 **Dependencies** (must be loaded **before** this mod):
 - Bannerlord.Harmony (top of load order)
-- Bannerlord.ButterLib
-- Bannerlord.UIExtenderEx
+- Bannerlord.ButterLib (optional but recommended)
+- Bannerlord.UIExtenderEx (optional but recommended)
 - Bannerlord.MCM (Mod Configuration Menu v5+)
 
 ## Features (all configurable via MCM)
@@ -40,25 +40,32 @@ The mod primarily manipulates `MobileParty.MainParty` using high-level vanilla m
 
 All logic prefers vanilla models and methods (`PartyTroopUpgradeModel`, `CharacterObject.UpgradeTargets`, roster manipulation following upgrade trees, etc.) to stay compatible with game rules, perks, and other mods.
 
-Optional Harmony patches are included (PromotionPatches.cs) for advanced users who want to suppress the vanilla upgrader for the player party.
+`PromotionPatches.cs` exists as a minimal placeholder for advanced Harmony patches (most users should not need it — the main logic already follows vanilla models closely).
 
 ## Folder Structure (for development)
 
 ```
 TroopManagerEnhanced/
+├── src/
+│   ├── SubModule.cs
+│   ├── TroopManagerSettings.cs
+│   ├── TroopManagementBehavior.cs          (thin orchestration layer)
+│   ├── PromotionManager.cs
+│   ├── RecruitmentManager.cs
+│   ├── AutoRecruitManager.cs               (settlement auto-recruit)
+│   ├── AutoDismissManager.cs               (low-tier / wounded cleanup)
+│   ├── PromotionPatches.cs                 (advanced placeholder only)
+│   └── TroopManagerHelper.cs
 ├── TroopManagerEnhanced.csproj
-├── SubModule.cs
-├── TroopManagerSettings.cs
-├── TroopManagementBehavior.cs
-├── TroopManagerHelper.cs (optional helpers)
 ├── TroopManagerEnhanced.sln
 ├── README.md
-├── _Module/
-│   └── SubModule.xml
-└── ModuleData/ (optional custom XMLs / localization)
+├── build.ps1
+├── ModuleData/ (localization XMLs)
+└── _Module/
+    └── SubModule.xml   (the module manifest; ModuleData + bin/ are populated on build)
 ```
 
-After build, the DLL is copied to `_Module/bin/Win64_Shipping_Client/TroopManagerEnhanced.dll`.
+After build, the DLL is copied to `_Module/bin/Win64_Shipping_Client/TroopManagerEnhanced.dll`. (ModuleData is also synced from source.)
 
 To install for testing:
 1. Build in Release (or Debug).
@@ -69,21 +76,32 @@ To install for testing:
 ## Building
 
 ### Requirements
-- Visual Studio 2022+ (or VS Code + .NET SDK)
+- .NET SDK (dotnet CLI)
 - A copy of Bannerlord (for assembly references during dev)
 - NuGet packages will pull MCM etc.
+- (Optional but recommended) PowerShell Core (`pwsh`) to run the packaging script on macOS/Linux.
 
-### Recommended .csproj setup
-Edit the `<GameFolder>` property in the .csproj to point at your Bannerlord installation (the folder containing `bin\Win64_Shipping_Client`).
+### Recommended build & packaging
+1. Set your Bannerlord path (see `.csproj` comments for Windows/macOS examples or use `-p:GameFolder=...`).
+2. For quick iteration: just run `dotnet build` (Debug or Release). The post-build target automatically populates `_Module/`.
+3. For a clean distributable package, use the dedicated script:
 
-Example:
-```xml
-<GameFolder>C:\Program Files (x86)\Steam\steamapps\common\Mount & Blade II Bannerlord</GameFolder>
-```
+   ```powershell
+   # Windows
+   .\build.ps1 -Configuration Release
 
-Build → the DLL + symbols will be placed correctly for the `_Module`.
+   # macOS / Linux (with PowerShell Core installed)
+   pwsh ./build.ps1 -Configuration Release
+   ```
 
-You can also add a post-build event that copies the whole module folder to your game's Modules directory.
+   This script:
+   - Syncs the version from `.csproj` → `_Module/SubModule.xml` (single source of truth).
+   - Cleans, builds, packages into `./output/TroopManagerEnhanced/`.
+   - Verifies the final artifact.
+
+See `CHANGELOG.md` for recent changes and `build.ps1` header for full details.
+
+The final packaged folder can be copied/symlinked into your game's `Modules/` directory.
 
 ## Load Order (Launcher / BLSE / Vortex)
 
@@ -102,7 +120,7 @@ You can also add a post-build event that copies the whole module folder to your 
 
 After loading a campaign, open **Mod Options** (ESC → Mod Options or the MCM button). All settings are under **Troop Manager Enhanced**.
 
-Settings are saved as JSON (Global by default).
+All settings are global (saved as JSON, not per-campaign).
 
 ## Best Practices & Notes
 
@@ -115,7 +133,7 @@ Settings are saved as JSON (Global by default).
 ## Extending
 
 - Add more events in `TroopManagementBehavior.RegisterEvents()`.
-- Add PerSave or PerCampaign settings if you want options that reset per save.
+- All configuration is global (MCM Global settings). Per-campaign/per-save configuration interface has been removed for simplicity.
 - Use ButterLib's `SubModule.Current.GetServiceContainer()` for advanced DI if desired.
 
 ## Versioning & Compatibility

@@ -1,10 +1,16 @@
 # Troop Manager Enhanced Build Script
 # Build process:
-# 1. Clean _Module internal files
-# 2. Rebuild the module
-# 3. Clean output directory (create if not exists)
-# 4. Migrate _Module to output and rename
-# 5. Verify artifact completeness
+# 1. Sync version from .csproj into _Module/SubModule.xml (single source of truth = csproj <Version>)
+# 2. Clean _Module internal files
+# 3. Rebuild the module (triggers post-build copy via .csproj)
+# 4. Clean output directory
+# 5. Migrate _Module to output/ and rename to final module folder
+# 6. Verify artifact completeness
+#
+# Notes:
+# - Run with PowerShell Core (pwsh) on macOS/Linux for cross-platform use.
+# - Version in SubModule.xml is automatically kept in sync with the .csproj <Version> property.
+# - After running, copy the final folder from ./output/ into your game's Modules/ directory.
 
 param(
     [ValidateSet("Debug", "Release")]
@@ -33,6 +39,7 @@ $projectRoot = $scriptDir
 $projectFile = Join-Path $projectRoot "TroopManagerEnhanced.csproj"
 $moduleDir = Join-Path $projectRoot "_Module"
 $moduleBinDir = Join-Path (Join-Path $moduleDir "bin") "Win64_Shipping_Client"
+$moduleModuleDataDir = Join-Path $moduleDir "ModuleData"
 $projectBinDir = Join-Path (Join-Path $projectRoot "bin") $Configuration
 $outputDir = Join-Path $projectRoot "output"
 
@@ -48,18 +55,48 @@ Write-Message "Configuration: $Configuration" "Info"
 Write-Message "" "Info"
 
 # ============================================
+# Version Sync (NEW - keeps SubModule.xml in sync)
+# ============================================
+Write-Message "[0/6] Syncing version from .csproj to SubModule.xml..." "Info"
+$csprojContent = Get-Content $projectFile -Raw
+if ($csprojContent -match '<Version>([^<]+)</Version>') {
+    $rawVersion = $matches[1].Trim()
+    $displayVersion = if ($rawVersion.StartsWith("v")) { $rawVersion } else { "v$rawVersion" }
+
+    $subModulePath = Join-Path $moduleDir "SubModule.xml"
+    if (Test-Path $subModulePath) {
+        $subContent = Get-Content $subModulePath -Raw
+        $updated = $subContent -replace '(<Version value=")[^"]*(")', "`${1}$displayVersion`$2"
+        if ($updated -ne $subContent) {
+            Set-Content -Path $subModulePath -Value $updated -NoNewline
+            Write-Message "  Synced version $displayVersion to _Module/SubModule.xml" "Success"
+        } else {
+            Write-Message "  Version already in sync ($displayVersion)" "Info"
+        }
+    } else {
+        Write-Message "  WARNING: SubModule.xml not found in _Module/" "Warning"
+    }
+} else {
+    Write-Message "  WARNING: Could not parse <Version> from .csproj" "Warning"
+}
+
+# ============================================
 # Step 1: Clean _Module internal files
 # ============================================
-Write-Message "[1/5] Cleaning _Module internal files..." "Warning"
+Write-Message "[1/6] Cleaning _Module internal files..." "Warning"
 if (Test-Path $moduleBinDir) {
     Get-ChildItem -Path $moduleBinDir -File -Force | Remove-Item -Force -ErrorAction SilentlyContinue
     Write-Message "  Cleaned _Module bin directory" "Success"
+}
+if (Test-Path $moduleModuleDataDir) {
+    Remove-Item -Path $moduleModuleDataDir -Recurse -Force -ErrorAction SilentlyContinue
+    Write-Message "  Cleaned _Module ModuleData (will be repopulated by build)" "Success"
 }
 
 # ============================================
 # Step 2: Rebuild the module
 # ============================================
-Write-Message "[2/5] Building project ($Configuration configuration)..." "Info"
+Write-Message "[2/6] Building project ($Configuration configuration)..." "Info"
 Set-Location $projectRoot
 $buildOutput = dotnet build $projectFile --configuration $Configuration 2>&1
 
@@ -76,7 +113,7 @@ if ($LASTEXITCODE -eq 0) {
 # ============================================
 # Step 3: Clean output directory
 # ============================================
-Write-Message "[3/5] Preparing output directory..." "Info"
+Write-Message "[3/6] Preparing output directory..." "Info"
 if (Test-Path $outputDir) {
     Remove-Item -Path $outputDir -Recurse -Force
     Write-Message "  Cleaned output directory" "Success"
@@ -90,7 +127,7 @@ if (-not (Test-Path $outputDir)) {
 # ============================================
 # Step 4: Migrate _Module to output and rename
 # ============================================
-Write-Message "[4/5] Migrating module to output..." "Info"
+Write-Message "[4/6] Migrating module to output..." "Info"
 
 if (-not (Test-Path $moduleDir)) {
     Write-Message "  ERROR: _Module directory not found!" "Error"
@@ -150,7 +187,7 @@ if (Test-Path $tempModuleDir) {
 # ============================================
 # Step 5: Verify artifact completeness
 # ============================================
-Write-Message "[5/5] Verifying artifact completeness..." "Info"
+Write-Message "[5/6] Verifying artifact completeness..." "Info"
 
 $expectedDll = Join-Path (Join-Path (Join-Path $finalModuleDir "bin") "Win64_Shipping_Client") $dllFileName
 $expectedPdb = Join-Path (Join-Path (Join-Path $finalModuleDir "bin") "Win64_Shipping_Client") $pdbFileName

@@ -44,7 +44,7 @@ namespace TroopManagerEnhanced
             if (party == null || !party.IsActive || party != MobileParty.MainParty)
                 return;
 
-            // War Sails / 1.4.5+ safety: only the player's main land party
+            // Only the player's main land party (ignore naval/ship parties)
             if (party != MobileParty.MainParty) return;
 
             if (settings == null || !settings.ModEnabled || !settings.AutoRecruitPrisonersEnabled)
@@ -222,7 +222,7 @@ namespace TroopManagerEnhanced
             if (party == null || settings == null || !settings.AcceleratedRecruitmentEnabled)
                 return;
 
-            if (party != MobileParty.MainParty) return; // War Sails safety
+            if (party != MobileParty.MainParty) return; // Main party only (ignore naval)
 
             try
             {

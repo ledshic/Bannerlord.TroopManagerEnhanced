@@ -18,13 +18,13 @@
   <!-- Feature Toggles -->
   <string id="TME_TogglePromo" text="自动晋升 (全局)" />
   <string id="TME_TogglePromoHint" text="自动晋升功能的主开关。" />
-  <string id="TME_TogglePrisoner" text="自动招募囚犯 (全局)" />
+  <string id="TME_TogglePrisoner" text="自动招募囚犯" />
   <string id="TME_TogglePrisonerHint" text="自动囚犯招募功能的主开关 (功能2)。" />
-  <string id="TME_ToggleAccel" text="加速招募 (全局)" />
+  <string id="TME_ToggleAccel" text="加速招募" />
   <string id="TME_ToggleAccelHint" text="加速招募（付费立即招募）功能的主开关 (功能3)。" />
-  <string id="TME_ToggleSettle" text="定居点自动招募 (全局)" />
+  <string id="TME_ToggleSettle" text="定居点自动招募" />
   <string id="TME_ToggleSettleHint" text="定居点自动招募的主开关。" />
-  <string id="TME_ToggleDismiss" text="自动解雇 (全局)" />
+  <string id="TME_ToggleDismiss" text="自动解雇" />
   <string id="TME_ToggleDismissHint" text="自动解雇/清理功能的主开关。" />
 
   <!-- Automatic Promotion -->
@@ -67,6 +67,8 @@
   <string id="TME_AccelBypassHint" text="如果为真，即使原版顺从度尚未达到也会招募囚犯。如果为假，则仅招募当前可招募的数量。" />
   <string id="TME_AccelFull" text="加速时招募整个堆叠" />
   <string id="TME_AccelFullHint" text="加速招募某个囚犯类型时，招募该类型的整个当前堆叠（而非单个“可招募数量”）。" />
+  <string id="TME_AccelHotkey" text="启用 Ctrl+R 热键" />
+  <string id="TME_AccelHotkeyHint" text="启用后，按住 Ctrl 并按 R 即可立即触发加速招募（前提是该功能已开启）。" />
   <string id="TME_TriggerAccel" text="立即触发加速招募" />
   <string id="TME_TriggerAccelHint" text="支付加速费用并立即招募符合条件的囚犯。" />
 
@@ -89,25 +91,6 @@
   <string id="TME_DismissWoundedHint" text="解雇伤员比例很高的堆叠。" />
   <string id="TME_DismissWoundPct" text="伤员解雇阈值 %" />
   <string id="TME_DismissWoundPctHint" text="如果一个堆叠的伤员比例超过此值，则考虑解雇（启用时）。" />
-
-  <!-- Legacy -->
-  <string id="TME_Legacy" text="旧版（兼容）" />
-  <string id="TME_LegacyPromo" text="自动升级部队（旧版）" />
-  <string id="TME_LegacyPromoHint" text="旧版选项。请优先使用上方的“自动晋升（全局）”开关。" />
-  <string id="TME_LegacyMulti" text="升级所有符合条件的阶层（旧版）" />
-  <string id="TME_LegacyMultiHint" text="旧版选项。请参阅晋升组中的“允许单次多阶晋升”。" />
-
-  <!-- Per-Save -->
-  <string id="TME_PerSaveDisplay" text="部队管理增强（单存档）" />
-  <string id="TME_PerSaveGroup" text="单存档功能开关" />
-  <string id="TME_PerSavePromo" text="在此战役/存档中启用晋升" />
-  <string id="TME_PerSavePromoHint" text="此存档的自动晋升功能覆盖开关。" />
-  <string id="TME_PerSavePris" text="在此战役/存档中启用囚犯招募" />
-  <string id="TME_PerSavePrisHint" text="此存档的囚犯自动招募功能覆盖开关。" />
-  <string id="TME_PerSaveAccel" text="在此战役/存档中启用加速招募" />
-  <string id="TME_PerSaveAccelHint" text="此存档的加速招募功能覆盖开关。" />
-  <string id="TME_PerSavePromoLimit" text="单存档晋升数量上限覆盖" />
-  <string id="TME_PerSavePromoLimitHint" text="0 = 使用全局设置。非零值将覆盖此存档的“每次检查最大晋升数”。" />
 
   <!-- Presets -->
   <string id="TME_PresetBalanced" text="平衡" />

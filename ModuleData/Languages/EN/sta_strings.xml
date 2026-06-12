@@ -21,15 +21,15 @@
   <string id="TME_Features" text="Features" />
 
   <!-- Feature Toggles -->
-  <string id="TME_TogglePromo" text="Auto Promotion (Global)" />
+  <string id="TME_TogglePromo" text="Auto Promotion" />
   <string id="TME_TogglePromoHint" text="Master toggle for Automatic Promotion feature." />
-  <string id="TME_TogglePrisoner" text="Auto Prisoner Recruit (Global)" />
+  <string id="TME_TogglePrisoner" text="Auto Prisoner Recruit" />
   <string id="TME_TogglePrisonerHint" text="Master toggle for automatic prisoner recruitment (Feature 2)." />
-  <string id="TME_ToggleAccel" text="Accelerated Recruitment (Global)" />
+  <string id="TME_ToggleAccel" text="Accelerated Recruitment" />
   <string id="TME_ToggleAccelHint" text="Master toggle for the accelerated (pay-to-recruit) feature (Feature 3)." />
-  <string id="TME_ToggleSettle" text="Settlement Auto Recruit (Global)" />
+  <string id="TME_ToggleSettle" text="Settlement Auto Recruit" />
   <string id="TME_ToggleSettleHint" text="Master toggle for settlement-based auto recruitment." />
-  <string id="TME_ToggleDismiss" text="Auto Dismiss (Global)" />
+  <string id="TME_ToggleDismiss" text="Auto Dismiss" />
   <string id="TME_ToggleDismissHint" text="Master toggle for auto dismiss / cleanup." />
 
   <!-- Automatic Promotion -->
@@ -72,6 +72,8 @@
   <string id="TME_AccelBypassHint" text="If true, accelerated recruitment will recruit prisoners even if vanilla conformity has not been reached yet. If false, it will only recruit currently recruitable quantities." />
   <string id="TME_AccelFull" text="Recruit Full Stack on Accelerate" />
   <string id="TME_AccelFullHint" text="When accelerating a troop type, recruit the entire current stack of that prisoner type (instead of a single 'recruitable quantity')." />
+  <string id="TME_AccelHotkey" text="Enable Ctrl+R Hotkey" />
+  <string id="TME_AccelHotkeyHint" text="When enabled, holding Ctrl and pressing R will immediately trigger accelerated recruitment (if the feature is active)." />
   <string id="TME_TriggerAccel" text="Trigger Accelerated Recruitment Now" />
   <string id="TME_TriggerAccelHint" text="Pay the accelerated cost and immediately recruit qualifying prisoners." />
 
@@ -94,25 +96,6 @@
   <string id="TME_DismissWoundedHint" text="Dismiss troops that are very heavily wounded (high wounded count relative to stack)." />
   <string id="TME_DismissWoundPct" text="Wounded Dismiss Threshold %" />
   <string id="TME_DismissWoundPctHint" text="If a stack has more than this % wounded, consider it for dismissal (when enabled)." />
-
-  <!-- Legacy -->
-  <string id="TME_Legacy" text="Legacy (Compatibility)" />
-  <string id="TME_LegacyPromo" text="Auto Upgrade Troops (Legacy)" />
-  <string id="TME_LegacyPromoHint" text="Legacy. Prefer the new 'Auto Promotion (Global)' toggle above." />
-  <string id="TME_LegacyMulti" text="Upgrade All Eligible Tiers (Legacy)" />
-  <string id="TME_LegacyMultiHint" text="Legacy. See 'Allow Multi-Tier In One Pass' in the Promotion group." />
-
-  <!-- Per-Save -->
-  <string id="TME_PerSaveDisplay" text="Troop Manager Enhanced (Per-Save)" />
-  <string id="TME_PerSaveGroup" text="Per-Save Feature Toggles" />
-  <string id="TME_PerSavePromo" text="Enable Promotion in this Campaign/Save" />
-  <string id="TME_PerSavePromoHint" text="Per-save override for Auto Promotion." />
-  <string id="TME_PerSavePris" text="Enable Prisoner Recruitment in this Campaign/Save" />
-  <string id="TME_PerSavePrisHint" text="Per-save override for prisoner auto-recruit." />
-  <string id="TME_PerSaveAccel" text="Enable Accelerated Recruitment in this Campaign/Save" />
-  <string id="TME_PerSaveAccelHint" text="Per-save override for accelerated feature." />
-  <string id="TME_PerSavePromoLimit" text="Per-Save Promotion Limit Override" />
-  <string id="TME_PerSavePromoLimitHint" text="0 = use global. Otherwise overrides Max Promotions Per Check for this save." />
 
   <!-- Presets -->
   <string id="TME_PresetBalanced" text="Balanced" />

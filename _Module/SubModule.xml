@@ -18,8 +18,8 @@
     <DependedModule Id="StoryMode" Optional="true"/>
 
     <!-- BUTR / MCM stack - Harmony MUST be first among these.
-         For Bannerlord 1.4.5 + War Sails 1.2.5, use the latest compatible versions
-         of these libraries (recommended via Steam Workshop or Nexus). -->
+         Use the latest compatible versions of these libraries for your Bannerlord version
+         (recommended via Steam Workshop or Nexus). -->
     <DependedModule Id="Bannerlord.Harmony"/>
     <DependedModule Id="Bannerlord.ButterLib"/>
     <DependedModule Id="Bannerlord.UIExtenderEx"/>

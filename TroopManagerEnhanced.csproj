@@ -1,12 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!-- Update this to your Bannerlord 1.4.5 + War Sails install for easy references -->
+    <!-- Set this to your local Bannerlord installation (the folder that contains bin\Win64_Shipping_Client).
+         Override examples:
+           - Windows:   dotnet build -p:GameFolder="C:\Program Files (x86)\Steam\steamapps\common\Mount & Blade II Bannerlord"
+           - macOS:     dotnet build -p:GameFolder="$HOME/Library/Application Support/Steam/steamapps/common/Mount & Blade II Bannerlord"
+           - Or set the GAMEFOLDER environment variable before building. -->
     <GameFolder Condition="'$(GameFolder)' == ''">D:\Steam\steamapps\common\Mount &amp; Blade II Bannerlord</GameFolder>
     <GameBinWin64>$(GameFolder)\bin\Win64_Shipping_Client</GameBinWin64>
 
     <!-- Recommended: Set this when building for a specific game version -->
-    <!-- <GameVersion>1.4.5</GameVersion> -->
+    <!-- <GameVersion>1.2.12</GameVersion> -->
 
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
@@ -90,7 +94,9 @@
     <!-- <PackageReference Include="Lib.Harmony" Version="2.3.3" /> -->
   </ItemGroup>
 
-  <!-- Post-build: Copy the built DLL + pdb into the deployable _Module structure -->
+  <!-- Post-build: Copy the built DLL + pdb + ModuleData into the deployable _Module structure.
+       Note: Version in _Module/SubModule.xml is kept in sync by build.ps1 (recommended packaging script).
+       This target runs automatically on `dotnet build`. -->
   <Target Name="CopyToModule" AfterTargets="Build">
     <ItemGroup>
       <ModOutputFiles Include="$(OutputPath)$(AssemblyName).dll" />
@@ -109,7 +115,7 @@
           DestinationFiles="@(ModModuleDataFiles->'$(_ModulePath)ModuleData\%(RecursiveDir)%(Filename)%(Extension)')"
           SkipUnchangedFiles="true" />
 
-    <Message Text="TroopManagerEnhanced: Copied build output to _Module/bin/Win64_Shipping_Client" Importance="high" />
+    <Message Text="TroopManagerEnhanced: Copied build output + ModuleData to _Module/" Importance="high" />
   </Target>
 
   <!-- Convenience: define _ModulePath relative to project -->

@@ -39,15 +39,13 @@ namespace TroopManagerEnhanced
             if (party == null || !party.IsActive || party != MobileParty.MainParty)
                 return;
 
-            // War Sails / 1.4.5+ safety: only the player's main land party
+            // Only the player's main land party (ignore naval/ship parties)
             if (party != MobileParty.MainParty) return;
 
             if (settings == null || !settings.ModEnabled)
                 return;
 
-            // Support legacy toggle + new primary toggle
-            bool promotionEnabled = settings.AutoPromotionEnabled || settings.AutoUpgradeEnabled;
-            if (!promotionEnabled)
+            if (!settings.AutoPromotionEnabled)
                 return;
 
             if (!ShouldRunNow(settings.PromotionFrequency))
@@ -83,8 +81,7 @@ namespace TroopManagerEnhanced
             // War Sails / 1.4.5+ safety
             if (party != MobileParty.MainParty) return;
 
-            bool promotionEnabled = settings.AutoPromotionEnabled || settings.AutoUpgradeEnabled;
-            if (!promotionEnabled) return;
+            if (!settings.AutoPromotionEnabled) return;
 
             try
             {
@@ -356,7 +353,7 @@ namespace TroopManagerEnhanced
         /// </summary>
         public static void ForcePromotionPass(MobileParty party, TroopManagerSettings settings)
         {
-            if (party == null || settings == null || !settings.ModEnabled || (!settings.AutoPromotionEnabled && !settings.AutoUpgradeEnabled))
+            if (party == null || settings == null || !settings.ModEnabled || !settings.AutoPromotionEnabled)
                 return;
 
             var manager = new PromotionManager();

@@ -4,7 +4,6 @@ using MCM.Abstractions;
 using MCM.Abstractions.Attributes;
 using MCM.Abstractions.Attributes.v2;
 using MCM.Abstractions.Base.Global;
-using MCM.Abstractions.Base.PerSave;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Localization;
 
@@ -102,35 +101,35 @@ namespace TroopManagerEnhanced
 
         // Global feature toggles (for quick enable/disable of major systems)
         [SettingPropertyBool(
-            "{=TME_TogglePromo}Auto Promotion (Global)",
+            "{=TME_TogglePromo}Auto Promotion",
             RequireRestart = false,
             HintText = "{=TME_TogglePromoHint}Master toggle for Automatic Promotion feature.")]
         [SettingPropertyGroup("{=TME_Features}Features")]
         public bool AutoPromotionEnabled { get; set; } = true;
 
         [SettingPropertyBool(
-            "{=TME_TogglePrisoner}Auto Prisoner Recruit (Global)",
+            "{=TME_TogglePrisoner}Auto Prisoner Recruit",
             RequireRestart = false,
             HintText = "{=TME_TogglePrisonerHint}Master toggle for automatic prisoner recruitment (Feature 2).")]
         [SettingPropertyGroup("{=TME_Features}Features")]
         public bool AutoRecruitPrisonersEnabled { get; set; } = true;
 
         [SettingPropertyBool(
-            "{=TME_ToggleAccel}Accelerated Recruitment (Global)",
+            "{=TME_ToggleAccel}Accelerated Recruitment",
             RequireRestart = false,
             HintText = "{=TME_ToggleAccelHint}Master toggle for the accelerated (pay-to-recruit) feature (Feature 3).")]
         [SettingPropertyGroup("{=TME_Features}Features")]
         public bool AcceleratedRecruitmentEnabled { get; set; } = true;
 
         [SettingPropertyBool(
-            "{=TME_ToggleSettle}Settlement Auto Recruit (Global)",
+            "{=TME_ToggleSettle}Settlement Auto Recruit",
             RequireRestart = false,
             HintText = "{=TME_ToggleSettleHint}Master toggle for settlement-based auto recruitment.")]
         [SettingPropertyGroup("{=TME_Features}Features")]
         public bool AutoRecruitEnabled { get; set; } = true;
 
         [SettingPropertyBool(
-            "{=TME_ToggleDismiss}Auto Dismiss (Global)",
+            "{=TME_ToggleDismiss}Auto Dismiss",
             RequireRestart = false,
             HintText = "{=TME_ToggleDismissHint}Master toggle for auto dismiss / cleanup.")]
         [SettingPropertyGroup("{=TME_Features}Features")]
@@ -303,6 +302,11 @@ namespace TroopManagerEnhanced
 
         #region Accelerated Recruitment (Feature 3)
 
+        // Note on "Action" buttons (ForcePromotionNow, ForcePrisonerRecruitNow, TriggerAcceleratedRecruitment):
+        // MCM does not have native button support in v5 attributes, so we use a bool property.
+        // When the user toggles it ON in the UI, the setter runs the action then immediately resets the value.
+        // This is a standard (if slightly clunky) workaround. The private backing fields prevent re-entrancy.
+
         [SettingPropertyFloatingInteger(
             "{=TME_AccelMult}Accelerated Cost Multiplier",
             1f, 100f,
@@ -325,6 +329,13 @@ namespace TroopManagerEnhanced
             HintText = "{=TME_AccelFullHint}Recruit the entire stack of the prisoner type instead of a single quantity.")]
         [SettingPropertyGroup("{=TME_Accel}Accelerated Recruitment")]
         public bool RecruitFullStackOnAccelerate { get; set; } = true;
+
+        [SettingPropertyBool(
+            "{=TME_AccelHotkey}Enable Ctrl+R Hotkey",
+            RequireRestart = false,
+            HintText = "{=TME_AccelHotkeyHint}When enabled, holding Ctrl and pressing R will immediately trigger accelerated recruitment (if the feature is active).")]
+        [SettingPropertyGroup("{=TME_Accel}Accelerated Recruitment")]
+        public bool AcceleratedRecruitmentHotkeyEnabled { get; set; } = true;
 
         // Existing trigger button (from previous feature)
         private bool _triggerAccelerated;
@@ -423,24 +434,6 @@ namespace TroopManagerEnhanced
 
         #endregion
 
-        #region Legacy (compatibility)
-
-        [SettingPropertyBool(
-            "{=TME_LegacyPromo}Auto Upgrade Troops (Legacy)",
-            RequireRestart = false,
-            HintText = "{=TME_LegacyPromoHint}Legacy. Use the main Auto Promotion toggle above instead.")]
-        [SettingPropertyGroup("{=TME_Legacy}Legacy (Compatibility)", GroupOrder = 99)]
-        public bool AutoUpgradeEnabled { get; set; } = true;
-
-        [SettingPropertyBool(
-            "{=TME_LegacyMulti}Upgrade All Eligible Tiers (Legacy)",
-            RequireRestart = false,
-            HintText = "{=TME_LegacyMultiHint}Legacy. See Allow Multi-Tier option in Promotion group.")]
-        [SettingPropertyGroup("{=TME_Legacy}Legacy (Compatibility)")]
-        public bool UpgradeAllTiers { get; set; } = true;
-
-        #endregion
-
         /// <summary>
         /// Built-in presets for quick configuration.
         /// </summary>
@@ -477,78 +470,23 @@ namespace TroopManagerEnhanced
         }
 
         /// <summary>
-        /// Helper to combine Global + PerSave settings for a feature.
-        /// Update managers to use these (e.g. if (TroopManagerSettings.IsFeatureEnabled("promotion")) ... )
+        /// Helper for feature enablement checks (used by behavior to decide whether to run logic).
+        /// All settings are now global-only (per-campaign/per-save configuration interface removed).
         /// </summary>
         public static bool IsFeatureEnabled(string featureKey)
         {
             var global = Instance;
             if (global == null || !global.ModEnabled) return false;
 
-            var perSave = TroopManagerPerSaveSettings.Instance;
-
             return featureKey switch
             {
-                "promotion" => global.AutoPromotionEnabled && (perSave?.EnablePromotionThisSave ?? true),
-                "prisoner_recruit" => global.AutoRecruitPrisonersEnabled && (perSave?.EnablePrisonerRecruitThisSave ?? true),
-                "accelerated" => global.AcceleratedRecruitmentEnabled && (perSave?.EnableAcceleratedThisSave ?? true),
+                "promotion" => global.AutoPromotionEnabled,
+                "prisoner_recruit" => global.AutoRecruitPrisonersEnabled,
+                "accelerated" => global.AcceleratedRecruitmentEnabled,
                 "settlement_recruit" => global.AutoRecruitEnabled,
                 "dismiss" => global.AutoDismissLowTierEnabled || global.DismissHeavilyWounded,
                 _ => true
             };
         }
-
-        /// <summary>
-        /// Returns effective limit, honoring per-save overrides when present.
-        /// </summary>
-        public int GetEffectiveMaxPromotionsPerCheck()
-        {
-            var perSave = TroopManagerPerSaveSettings.Instance;
-            if (perSave != null && perSave.PerSavePromotionLimitOverride > 0)
-                return perSave.PerSavePromotionLimitOverride;
-            return MaxPromotionsPerCheck;
-        }
-    }
-
-    /// <summary>
-    /// Example Per-Save / Per-Campaign settings.
-    /// These are saved with the campaign/save file.
-    /// Useful for options that should vary per playthrough (e.g. whether a feature is active in this save, or save-specific limits).
-    /// MCM will expose these separately (or under a per-save tab depending on implementation).
-    /// </summary>
-    internal sealed class TroopManagerPerSaveSettings : AttributePerSaveSettings<TroopManagerPerSaveSettings>
-    {
-        public override string Id => "TroopManagerEnhanced_PerSave_v1";
-        public override string DisplayName => "{=TME_PerSaveDisplay}Troop Manager Enhanced (Per-Save)";
-        public override string FolderName => "TroopManagerEnhanced";
-
-        [SettingPropertyBool(
-            "{=TME_PerSavePromo}Enable Promotion in this Campaign/Save",
-            RequireRestart = false,
-            HintText = "{=TME_PerSavePromoHint}Per-save override for Auto Promotion.")]
-        [SettingPropertyGroup("{=TME_PerSaveGroup}Per-Save Feature Toggles")]
-        public bool EnablePromotionThisSave { get; set; } = true;
-
-        [SettingPropertyBool(
-            "{=TME_PerSavePris}Enable Prisoner Recruitment in this Campaign/Save",
-            RequireRestart = false,
-            HintText = "{=TME_PerSavePrisHint}Per-save override for prisoner auto-recruit.")]
-        [SettingPropertyGroup("{=TME_PerSaveGroup}Per-Save Feature Toggles")]
-        public bool EnablePrisonerRecruitThisSave { get; set; } = true;
-
-        [SettingPropertyBool(
-            "{=TME_PerSaveAccel}Enable Accelerated Recruitment in this Campaign/Save",
-            RequireRestart = false,
-            HintText = "{=TME_PerSaveAccelHint}Per-save override for accelerated feature.")]
-        [SettingPropertyGroup("{=TME_PerSaveGroup}Per-Save Feature Toggles")]
-        public bool EnableAcceleratedThisSave { get; set; } = true;
-
-        [SettingPropertyInteger(
-            "{=TME_PerSavePromoLimit}Per-Save Promotion Limit Override",
-            0, 100, "0",
-            RequireRestart = false,
-            HintText = "{=TME_PerSavePromoLimitHint}0 = use global Max Promotions Per Check. Non-zero overrides for this save only.")]
-        [SettingPropertyGroup("{=TME_PerSaveGroup}Per-Save Feature Toggles")]
-        public int PerSavePromotionLimitOverride { get; set; } = 0;
     }
 }

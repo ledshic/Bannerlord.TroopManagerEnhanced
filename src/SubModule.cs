@@ -18,7 +18,7 @@ namespace TroopManagerEnhanced
     public class SubModule : MBSubModuleBase
     {
         // Use a unique Harmony ID. Reverse domain or mod id is conventional.
-        private const string HarmonyId = "com.yourname.troopmanagerenhanced";
+        private const string HarmonyId = "TroopManagerEnhanced";
 
         private Harmony? _harmony;
 
@@ -32,19 +32,11 @@ namespace TroopManagerEnhanced
                 // Even if we do not heavily patch, this is the recommended place and pattern.
                 //
                 // This will pick up:
-                //   - Any [HarmonyPatch] classes (see PromotionPatches.cs for optional
-                //     vanilla upgrader suppression and debug patches related to Automatic Promotion).
+                //   - Any [HarmonyPatch] classes (PromotionPatches.cs is a placeholder for advanced users only).
                 _harmony = new Harmony(HarmonyId);
                 _harmony.PatchAll(Assembly.GetExecutingAssembly());
 
-                // Optional UIExtenderEx registration (already a dependency of the mod).
-                // For a richer experience with Feature 3, you can extend the Party/Prisoner Gauntlet VM here
-                // to add an "Accelerate Recruitment" button directly in the prisoner list.
-                // Example (requires additional mixin/view model code):
-                // var uiExtender = new UIExtender("TroopManagerEnhanced");
-                // uiExtender.Register(new PartyScreenAccelerateMixin()); // your custom mixin
-                // uiExtender.Enable();
-                //
+                // Optional UIExtenderEx registration is available if deeper UI integration (e.g. buttons in the party screen) is desired later.
                 // See Bannerlord UIExtenderEx documentation for PartyVM / PrisonerListVM mixins.
 
                 // Optional: Log that we loaded (visible in launcher logs / debug).
@@ -98,16 +90,13 @@ namespace TroopManagerEnhanced
             }
         }
 
-        // You can also override:
-        // - OnNewGameCreated (for first-time setup)
-        // - OnGameLoaded (to handle migration or re-initialization from saves)
-        // - BeginGameStart / OnCampaignStart etc. as needed.
+        // Additional lifecycle overrides (OnNewGameCreated, OnGameLoaded, etc.) can be added here if needed in the future.
 
         /// <summary>
         /// Simple hotkey support for Feature 3 (Accelerated Recruitment).
         /// Default: Left Ctrl + R (while in a campaign with a main party).
         /// Feel free to change the key combination.
-        /// For a more polished experience, consider adding a proper button via UIExtenderEx on the Gauntlet Party/Prisoner screen.
+        /// For a more polished experience, consider adding a proper button via UIExtenderEx on the Gauntlet Party/Prisoner screen (advanced).
         /// </summary>
         protected override void OnApplicationTick(float dt)
         {
@@ -120,7 +109,7 @@ namespace TroopManagerEnhanced
                     return;
 
                 var settings = TroopManagerSettings.Instance;
-                if (settings == null || !settings.AcceleratedRecruitmentEnabled)
+                if (settings == null || !settings.AcceleratedRecruitmentEnabled || !settings.AcceleratedRecruitmentHotkeyEnabled)
                     return;
 
                 // Hotkey: Ctrl + R

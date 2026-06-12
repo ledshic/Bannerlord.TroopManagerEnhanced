@@ -45,5 +45,10 @@ obj/
 # Build output directory
 output/
 
+# _Module generated content (populated by build: don't commit stale copies)
+# Keep only _Module/SubModule.xml as the hand-authored manifest.
+_Module/bin/
+_Module/ModuleData/
+
 # Don't commit local game paths if someone puts absolute paths in csproj.user
 *.csproj.user
