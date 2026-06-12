@@ -42,8 +42,10 @@
     <Optimize>true</Optimize>
   </PropertyGroup>
 
-  <!-- Game assembly references (Private = false so they are not copied to output) -->
-  <ItemGroup>
+  <!-- Game assembly references (Private = false so they are not copied to output).
+       On CI / machines without a full local Bannerlord install, we fall back to
+       Bannerlord.ReferenceAssemblies (used by the other modules in this repo). -->
+  <ItemGroup Condition="Exists('$(GameBinWin64)\TaleWorlds.Core.dll')">
     <!-- Primary game assemblies - adjust if your game version differs slightly in naming -->
     <Reference Include="TaleWorlds.CampaignSystem">
       <HintPath>$(GameBinWin64)\TaleWorlds.CampaignSystem.dll</HintPath>
@@ -78,6 +80,11 @@
       <Private>false</Private>
     </Reference>
     <!-- Add more as needed (SandBox, StoryMode, etc.) -->
+  </ItemGroup>
+
+  <!-- Fallback for CI / contributors (no local game install required) -->
+  <ItemGroup Condition="!Exists('$(GameBinWin64)\TaleWorlds.Core.dll')">
+    <PackageReference Include="Bannerlord.ReferenceAssemblies" Version="1.*" PrivateAssets="all" />
   </ItemGroup>
 
   <!-- Bannerlord community framework packages -->

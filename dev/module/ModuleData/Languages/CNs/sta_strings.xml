@@ -22,15 +22,9 @@
 
   <!-- Feature Toggles -->
   <string id="TME_TogglePromo" text="自动晋升" />
-  <string id="TME_TogglePromoHint" text="自动晋升功能的主开关。" />
+  <string id="TME_TogglePromoHint" text="自动晋升功能的主开关（每日满经验检查 + 随机分支）。" />
   <string id="TME_TogglePrisoner" text="自动招募囚犯" />
-  <string id="TME_TogglePrisonerHint" text="自动囚犯招募功能的主开关 (功能2)。" />
-  <string id="TME_ToggleAccel" text="加速招募" />
-  <string id="TME_ToggleAccelHint" text="加速招募（付费立即招募）功能的主开关 (功能3)。" />
-  <string id="TME_ToggleSettle" text="定居点自动招募" />
-  <string id="TME_ToggleSettleHint" text="定居点自动招募的主开关。" />
-  <string id="TME_ToggleDismiss" text="自动解雇" />
-  <string id="TME_ToggleDismissHint" text="自动解雇/清理功能的主开关。" />
+  <string id="TME_TogglePrisonerHint" text="自动囚犯招募功能的主开关（每日顺从度检查 + 空位）。" />
 
   <!-- Automatic Promotion -->
   <string id="TME_Promo" text="自动晋升" />
