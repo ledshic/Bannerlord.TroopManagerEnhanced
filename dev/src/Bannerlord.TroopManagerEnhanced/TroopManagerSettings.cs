@@ -56,7 +56,7 @@ namespace Bannerlord.TroopManagerEnhanced
         [SettingPropertyBool(
             "{=TME_ShowNotifs}Show Notifications",
             RequireRestart = false,
-            HintText = "{=TME_ShowNotifsHint}Display information messages when the mod upgrades, recruits, or recruits troops."]
+            HintText = "{=TME_ShowNotifsHint}Display information messages when the mod upgrades, recruits, or recruits troops.")]
         [SettingPropertyGroup("{=TME_General}General")]
         public bool ShowNotifications { get; set; } = true;
 
@@ -103,6 +103,13 @@ namespace Bannerlord.TroopManagerEnhanced
             HintText = "{=TME_MaxPromoPerHint}Hard cap on how many individual troop promotions can occur in the daily pass.")]
         [SettingPropertyGroup("{=TME_Promo}Automatic Promotion")]
         public int MaxPromotionsPerCheck { get; set; } = 20;
+
+        [SettingPropertyBool(
+            "{=TME_SkipBranched}Skip Branched Promotions",
+            RequireRestart = false,
+            HintText = "{=TME_SkipBranchedHint}When enabled, troops with multiple upgrade paths will NOT be auto-promoted. They are left for the player to choose manually.")]
+        [SettingPropertyGroup("{=TME_Promo}Automatic Promotion")]
+        public bool SkipBranchedPromotions { get; set; } = false;
 
         // Button for manual trigger
         private bool _forcePromo;

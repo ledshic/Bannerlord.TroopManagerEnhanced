@@ -5,7 +5,7 @@
     <tag language="English" />
   </tags>
   <strings>
-  <!-- 
+  <!--
     TroopManagerEnhanced - English Localization
     MCMv5 uses {=KEY} syntax in SettingProperty attributes.
     These strings appear in Mod Options.
@@ -34,6 +34,8 @@
   <string id="TME_MinGoldHint" text="Never spend gold below this reserve on promotions." />
   <string id="TME_MaxPromoPer" text="Max Promotions Per Day" />
   <string id="TME_MaxPromoPerHint" text="Hard cap on how many individual troop promotions can occur in the daily pass." />
+  <string id="TME_SkipBranched" text="Skip Branched Promotions" />
+  <string id="TME_SkipBranchedHint" text="When enabled, troops with multiple upgrade paths will NOT be auto-promoted. They are left for the player to choose manually." />
   <string id="TME_ForcePromo" text="Force Auto Promotion Now" />
   <string id="TME_ForcePromoHint" text="Toggle ON to immediately run a promotion pass on your main party (respects gold/cost caps). Resets automatically." />
 

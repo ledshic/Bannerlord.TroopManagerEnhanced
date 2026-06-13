@@ -73,7 +73,7 @@ namespace Bannerlord.TroopManagerEnhanced
             int maxThisCheck = Math.Max(1, settings.MaxPrisonerRecruitsPerTick);
             bool prioritizeHighTier = settings.PrioritizeHighTierPrisoners;
 
-            var recruitmentModel = Campaign.Current?.Models?.PrisonerRecruitmentModel;
+            var recruitmentModel = Campaign.Current?.Models?.PrisonerRecruitmentCalculationModel;
 
             // Build candidates that have at least some conformity progress
             var candidates = new List<PrisonerCandidate>();
@@ -98,7 +98,7 @@ namespace Bannerlord.TroopManagerEnhanced
 
                 if (recruitmentModel != null)
                 {
-                    neededPerOne = recruitmentModel.GetConformityNeededToRecruitPrisoner(party.Party, troop);
+                    neededPerOne = recruitmentModel.GetConformityNeededToRecruitPrisoner(troop);
                     if (neededPerOne <= 0) neededPerOne = 1;
                 }
 

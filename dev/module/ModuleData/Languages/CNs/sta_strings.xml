@@ -5,7 +5,7 @@
     <tag language="简体中文" />
   </tags>
   <strings>
-  <!-- 
+  <!--
     TroopManagerEnhanced - 简体中文本地化 (Simplified Chinese)
     MCMv5 使用 {=KEY} 语法在 SettingProperty 属性中。
     这些字符串会出现在 Mod Options 中。
@@ -34,6 +34,8 @@
   <string id="TME_MinGoldHint" text="晋升时永远不要将金币花费到此储备以下。" />
   <string id="TME_MaxPromoPer" text="每次检查最大晋升数" />
   <string id="TME_MaxPromoPerHint" text="单次检查中可发生的单个部队晋升数量上限。" />
+  <string id="TME_SkipBranched" text="忽略存在分支的晋升" />
+  <string id="TME_SkipBranchedHint" text="启用后，存在多个晋升分支的士兵将不会被自动晋升，留给玩家手动选择。" />
   <string id="TME_ForcePromo" text="立即强制自动晋升" />
   <string id="TME_ForcePromoHint" text="切换为开启可立即对主力部队执行一次晋升检查。使用后自动关闭。" />
 

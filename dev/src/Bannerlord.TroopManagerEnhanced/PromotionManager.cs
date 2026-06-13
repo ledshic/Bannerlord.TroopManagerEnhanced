@@ -91,6 +91,11 @@ namespace Bannerlord.TroopManagerEnhanced
                 if (fromTroop.UpgradeTargets == null || fromTroop.UpgradeTargets.Length == 0)
                     continue;
 
+                // Skip troops with multiple upgrade paths if the setting is enabled,
+                // leaving the choice to the player.
+                if (settings.SkipBranchedPromotions && fromTroop.UpgradeTargets.Length > 1)
+                    continue;
+
                 int availableXp = roster.GetElementXp(i);
                 if (availableXp < 0) availableXp = 0;
 

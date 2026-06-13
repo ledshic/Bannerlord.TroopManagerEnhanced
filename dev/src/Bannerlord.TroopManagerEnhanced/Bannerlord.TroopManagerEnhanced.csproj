@@ -130,7 +130,7 @@
   <!-- Convenience: define _ModulePath relative to project (for quick dotnet build iteration).
        From dev/src/Bannerlord.TroopManagerEnhanced/ this reaches the mod root _Module. -->
   <PropertyGroup>
-    <_ModulePath>$(MSBuildProjectDirectory)\..\..\..\ _Module\</_ModulePath>
+    <_ModulePath>$(MSBuildProjectDirectory)\..\..\..\_Module\</_ModulePath>
   </PropertyGroup>
 
   <!-- Optional: Strong naming / signing not usually needed for Bannerlord mods -->

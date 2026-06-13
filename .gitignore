@@ -1,54 +1,13 @@
-# Build outputs
-bin/
-obj/
+# .NET build intermediates
+**/bin/
+**/obj/
+
+# Bannerlord module/package outputs
+/output/
+/_Module/
+
+# Local IDE/user files
+.vs/
+.vscode/
 *.user
 *.suo
-*.userosscache
-*.sln.docstates
-
-# Visual Studio
-.vs/
-*.vspscc
-*.vssscc
-*_i.c
-*_p.c
-*_i.h
-*.ilk
-*.meta
-*.obj
-*.pch
-*.pdb
-*.pgc
-*.pgd
-*.rsp
-*.sbr
-*.tlb
-*.tli
-*.tlh
-*.tmp
-*.tmp_proj
-*.log
-*.vspscc
-*.vssscc
-.builds
-*.pidb
-*.svclog
-*.scc
-
-# Rider / JetBrains
-.idea/
-*.sln.iml
-
-# Mac
-.DS_Store
-
-# Build output directory
-output/
-
-# _Module generated content (populated by build: don't commit stale copies)
-# Keep only _Module/SubModule.xml as the hand-authored manifest.
-_Module/bin/
-_Module/ModuleData/
-
-# Don't commit local game paths if someone puts absolute paths in csproj.user
-*.csproj.user
