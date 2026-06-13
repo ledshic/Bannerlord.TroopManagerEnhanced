@@ -49,7 +49,8 @@ $zipPath = Join-Path $root "out/Bannerlord.TroopManagerEnhanced-$Version.zip"
 if (Test-Path $zipPath) {
     Remove-Item $zipPath -Force
 }
-Compress-Archive -Path "$staging/*" -DestinationPath $zipPath -Force
+# Include the module root directory in zip so users can extract directly into Modules/.
+Compress-Archive -Path $staging -DestinationPath $zipPath -Force
 
 Write-Host "Build complete."
 Write-Host "Mod folder: $staging"
