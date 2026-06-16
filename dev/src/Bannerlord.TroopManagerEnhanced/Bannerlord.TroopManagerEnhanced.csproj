@@ -21,7 +21,7 @@
     <AssemblyName>Bannerlord.TroopManagerEnhanced</AssemblyName>
     <RootNamespace>Bannerlord.TroopManagerEnhanced</RootNamespace>
     <Version>1.0.0</Version>
-    <Authors>YourName</Authors>
+    <Authors>ledshic</Authors>
     <Product>Bannerlord.TroopManagerEnhanced</Product>
     <Description>Automated troop upgrade, recruit, and management for Bannerlord player parties. MCM configurable.</Description>
 
