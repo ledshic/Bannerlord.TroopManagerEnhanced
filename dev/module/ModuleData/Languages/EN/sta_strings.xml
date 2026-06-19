@@ -25,6 +25,8 @@
   <string id="TME_TogglePromoHint" text="Master toggle for Automatic Promotion feature (daily full-EXP checks + random branch)." />
   <string id="TME_TogglePrisoner" text="Auto Prisoner Recruit" />
   <string id="TME_TogglePrisonerHint" text="Master toggle for automatic prisoner recruitment (daily conformity check + slots)." />
+  <string id="TME_ToggleSettlement" text="Auto Settlement Recruit" />
+  <string id="TME_ToggleSettlementHint" text="When entering a non-hostile village/castle/town, auto recruit volunteers if party size is below threshold." />
 
   <!-- Automatic Promotion (daily full-EXP + random branch when choice exists) -->
   <string id="TME_Promo" text="Automatic Promotion" />
@@ -52,9 +54,19 @@
   <string id="TME_ForcePris" text="Force Prisoner Recruitment Now" />
   <string id="TME_ForcePrisHint" text="Immediately attempt to recruit conformity-ready prisoners (respects free slots and settings)." />
 
+  <!-- Settlement Entry Auto Recruitment -->
+  <string id="TME_Sett" text="Settlement Auto Recruitment" />
+  <string id="TME_SettThreshold" text="Recruit Threshold (%)" />
+  <string id="TME_SettThresholdHint" text="If your party size ratio is below this percentage when entering a recruitable settlement, the mod will recruit volunteers up to this percentage of party size limit." />
+  <string id="TME_SettMaxPerEntry" text="Max Recruits Per Entry" />
+  <string id="TME_SettMaxPerEntryHint" text="Hard cap of volunteers recruited on each settlement entry trigger." />
+  <string id="TME_SettCooldown" text="Same Settlement Cooldown (Hours)" />
+  <string id="TME_SettCooldownHint" text="Minimum hours before the same settlement can trigger auto recruitment again. 0 = no cooldown." />
+
   <!-- Runtime Messages (kept only for active features) -->
   <string id="TME_PROMO_001" text="Promoted {PROMOTED} troops." />
   <string id="TME_RECRUIT_001" text="Recruited {COUNT} prisoners into your party." />
+  <string id="TME_SETT_RECRUIT_001" text="Recruited {COUNT} volunteers in {SETTLEMENT}." />
   <string id="TME_INIT_FAIL" text="TroopManagerEnhanced failed to initialize Harmony. Check logs." />
 
   </strings>

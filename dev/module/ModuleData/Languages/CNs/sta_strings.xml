@@ -25,6 +25,8 @@
   <string id="TME_TogglePromoHint" text="自动晋升功能的主开关（每日满经验检查 + 随机分支）。" />
   <string id="TME_TogglePrisoner" text="自动招募囚犯" />
   <string id="TME_TogglePrisonerHint" text="自动囚犯招募功能的主开关（每日顺从度检查 + 空位）。" />
+  <string id="TME_ToggleSettlement" text="据点自动招募" />
+  <string id="TME_ToggleSettlementHint" text="进入非敌对村庄/城堡/城镇时，若队伍人数低于阈值则自动招募志愿兵。" />
 
   <!-- Automatic Promotion -->
   <string id="TME_Promo" text="自动晋升" />
@@ -52,10 +54,20 @@
   <string id="TME_ForcePris" text="立即强制囚犯招募" />
   <string id="TME_ForcePrisHint" text="立即尝试招募可用囚犯（会考虑空闲位置和设置）。" />
 
+  <!-- Settlement Entry Auto Recruitment -->
+  <string id="TME_Sett" text="据点自动招募" />
+  <string id="TME_SettThreshold" text="招募阈值（%）" />
+  <string id="TME_SettThresholdHint" text="进入可招募据点时，若队伍人数占上限比例低于该百分比，则自动招募至该百分比对应人数。" />
+  <string id="TME_SettMaxPerEntry" text="每次进入最大招募数" />
+  <string id="TME_SettMaxPerEntryHint" text="每次触发据点自动招募时，志愿兵招募数量上限。" />
+  <string id="TME_SettCooldown" text="同一据点冷却（小时）" />
+  <string id="TME_SettCooldownHint" text="同一据点再次触发自动招募前的最小间隔小时数。0 = 无冷却。" />
+
 
 
   <string id="TME_PROMO_001" text="晋升了 {PROMOTED} 名部队。" />
   <string id="TME_RECRUIT_001" text="将 {COUNT} 名囚犯招募进入你的部队。" />
+  <string id="TME_SETT_RECRUIT_001" text="在 {SETTLEMENT} 自动招募了 {COUNT} 名志愿兵。" />
   <string id="TME_INIT_FAIL" text="TroopManagerEnhanced 初始化 Harmony 失败。请查看日志。" />
 
   </strings>

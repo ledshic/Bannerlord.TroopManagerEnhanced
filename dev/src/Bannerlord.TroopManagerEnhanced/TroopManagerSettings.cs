@@ -75,6 +75,13 @@ namespace Bannerlord.TroopManagerEnhanced
         [SettingPropertyGroup("{=TME_Features}Features")]
         public bool AutoRecruitPrisonersEnabled { get; set; } = true;
 
+        [SettingPropertyBool(
+            "{=TME_ToggleSettlement}Auto Settlement Recruit",
+            RequireRestart = false,
+            HintText = "{=TME_ToggleSettlementHint}When entering a non-hostile village/castle/town, auto recruit volunteers if party size is below threshold.")]
+        [SettingPropertyGroup("{=TME_Features}Features")]
+        public bool AutoRecruitFromSettlementEnabled { get; set; } = true;
+
         #endregion
 
         #region Automatic Promotion (daily, full EXP + random branch)
@@ -219,8 +226,35 @@ namespace Bannerlord.TroopManagerEnhanced
 
         #endregion
 
-        // Settlement Auto Recruit + Auto Dismiss sections removed (no MCM properties for them remain).
-        // Accelerated Recruitment was removed in prior step.
+        #region Settlement Entry Auto Recruitment
+
+        [SettingPropertyInteger(
+            "{=TME_SettThreshold}Recruit Threshold (%)",
+            1, 100, "0",
+            RequireRestart = false,
+            HintText = "{=TME_SettThresholdHint}If your party size ratio is below this percentage when entering a recruitable settlement, the mod will recruit volunteers up to this percentage of party size limit.")]
+        [SettingPropertyGroup("{=TME_Sett}Settlement Auto Recruitment", GroupOrder = 3)]
+        public int SettlementRecruitThreshold { get; set; } = 80;
+
+        [SettingPropertyInteger(
+            "{=TME_SettMaxPerEntry}Max Recruits Per Entry",
+            1, 100, "0",
+            RequireRestart = false,
+            HintText = "{=TME_SettMaxPerEntryHint}Hard cap of volunteers recruited on each settlement entry trigger.")]
+        [SettingPropertyGroup("{=TME_Sett}Settlement Auto Recruitment")]
+        public int MaxSettlementRecruitsPerEntry { get; set; } = 20;
+
+        [SettingPropertyInteger(
+            "{=TME_SettCooldown}Same Settlement Cooldown (Hours)",
+            0, 24, "0",
+            RequireRestart = false,
+            HintText = "{=TME_SettCooldownHint}Minimum hours before the same settlement can trigger auto recruitment again. 0 = no cooldown.")]
+        [SettingPropertyGroup("{=TME_Sett}Settlement Auto Recruitment")]
+        public int SettlementRecruitCooldownHours { get; set; } = 8;
+
+        #endregion
+
+        // Auto Dismiss and Accelerated Recruitment were removed in prior steps.
 
         /// <summary>
         /// Feature enablement for the (now very small) set of active systems.
@@ -235,6 +269,7 @@ namespace Bannerlord.TroopManagerEnhanced
             {
                 "promotion" => global.AutoPromotionEnabled,
                 "prisoner_recruit" => global.AutoRecruitPrisonersEnabled,
+                "settlement_recruit" => global.AutoRecruitFromSettlementEnabled,
                 _ => false
             };
         }
